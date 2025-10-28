@@ -4,6 +4,8 @@
 import lgpio
 import RPi.GPIO as GPIO
 
+from main import print_and_log
+
 # --- Definitions ---
 
 
@@ -69,13 +71,17 @@ def backward():
     motor_l_backward()
     motor_r_backward()
 
-def turn_left():
+def turn_left(angle):
     # left turn: left wheel backward, right wheel forward
     motor_l_backward()
     motor_r_forward()
 
-def turn_right():
+    print_and_log(f"Turning left! Servo angle: {angle:.1f} degrees")
+
+def turn_right(angle):
     # right turn: left wheel forward, right wheel backward
     motor_l_forward()
     motor_r_backward()
+
+    print_and_log(f"Turning right! Servo angle: {angle:.1f} degrees")
 
