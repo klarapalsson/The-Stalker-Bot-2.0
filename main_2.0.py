@@ -5,7 +5,7 @@ import RPi.GPIO as GPIO
 import time
 import ai_detection
 from ultrasonic_sensor import get_distance
-from motor_controller import EN_PIN1, EN_PIN2, forward, backward, turn_left, turn_right, stop_all as stop
+from motor_controller import EN_PIN1, EN_PIN2, forward, backward, turn_left, turn_right, turn_left_forward, turn_left_backward, turn_right_forward, turn_right_backward, stop_all as stop
 
 # --- General definitions ---
 target_minimum_area = 0.35
@@ -88,32 +88,47 @@ def follow():
             
         if person_area is None:
             print_and_log("No person detected, waiting...")
-            forward()
             stop()
             continue
         
         print_and_log(f"Person takes up {person_area:.2f} of the total frame size")
 
         if person_area < target_minimum_area:
-
+            
             print_and_log("Person is too far away, trying to move forward...")
+            
+            if direction == "right":
+                turn_right_forward()
 
-            forward()
+            elif direction == "left":
+                turn_left_forward()
 
-        if direction == "right":
-            turn_right()
-
-        if direction == "left":
-            turn_left()
-
-
+            else:
+                forward()
+                
         elif person_area > target_maximum_area:
             print_and_log("Person is too close, moving backwards...")
-            backward()
+
+            if direction == "right":
+                turn_right_backward()
+
+            elif direction == "left":
+                turn_left_backward()
+
+            else:
+                backward()
 
         else:
             print_and_log("Distance is OK, stopping...")
-            stop()
+
+             if direction == "right":
+                turn_right()
+
+            elif direction == "left":
+                turn_left()
+
+            else:
+                stop()
 
         time.sleep(follow_loop_update_time)
 
