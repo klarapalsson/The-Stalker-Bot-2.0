@@ -1,10 +1,12 @@
 
 # --- Imports ---
 
+import RPi.GPIO as GPIO
 import time
 import ai_detection
 from remote_controller import press, unpress, check_button_press, move_backwards_button_pin, move_forward_button_pin, turn_left_button_pin, turn_right_button_pin
 from ultrasonic_sensor import get_distance
+from motor_controller import EN_PIN
 
 # --- General definitions ---
 
@@ -263,4 +265,8 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         stop()
+    finally:
+        # Disable motors and cleanup GPIO
+        GPIO.output(EN_PIN, GPIO.LOW)
+        GPIO.cleanup()
 
