@@ -272,7 +272,7 @@ def get_direction(x_center_normalized):
 
     direction = None
 
-    if x_center_normalized > 0.5 + camera_threshold
+    if x_center_normalized > 0.5 + camera_threshold:
         direction = "left"
 
     elif x_center_normalized < 0.5 - camera_threshold:
