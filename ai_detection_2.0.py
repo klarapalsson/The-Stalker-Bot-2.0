@@ -30,13 +30,14 @@ ignore_dash_labels = False
 camera_frame_width = 640
 camera_frame_height = 480
 camera_frame_area = camera_frame_width * camera_frame_height
+camera_threshold = 0.1
 
 bounding_box_opacity = 0.7
 bounding_box_thickness = 2
 
 # --- Video recording definitions ---
 
-video_recording = True # Flag to enable or disable video recording
+video_recording = False # Flag to enable or disable video recording
 video_recording_fps = 30 # Frames per second for video recording
 video_recording_size = (camera_frame_width, camera_frame_height) # Size of the video recording frame
 
@@ -44,24 +45,6 @@ video_status_text = ""
 video_status_text_font = cv2.FONT_HERSHEY_PLAIN
 video_status_text_size = 1
 video_status_text_thickness = 1
-
-# --- Servo definitions ---
-
-servo_maximum_position = 1
-servo_minimum_position = -1
-servo_minimum_pulse_width = 0.5 / 1000
-servo_maximum_pulse_width = 2.5 / 1000
-servo_step = 0.04
-servo_threshold = 0.2
-servo_change_threshold = 0.005
-servo_smooth_speed = 0.005
-servo_step_delay = 0.005
-
-# --- Servo setup ---
-
-servo = Servo(18, min_pulse_width = servo_minimum_pulse_width, max_pulse_width = servo_maximum_pulse_width) # Creates a servo object on GPIO pin 18 with specified pulse widths
-servo_position = 0.0 # Creates a variable for the servo position and initializes its value to 0.0 (center position)
-servo.value = servo_position # Sets the position to "servo_position"
 
 class Detection:
 
@@ -285,68 +268,22 @@ def get_arguments():
 
     return parser.parse_args()
 
-def update_servo_tracking(x_center_normalized):
-
-    """
-    Updates the servo tracking position based on the normalized x center position.
-
-    Arguments:
-        x_center_normalized (float): The normalized x center position of the detected object.
-
-    Returns:
-        "angle": The calculated servo angle position.
-
-    """
-
-    global servo_position
+def get_direction(x_center_normalized):
 
     direction = None
 
-    target_position = servo_position
+    if x_center_normalized > 0.5 + camera_threshold
+        direction = "left"
 
-    if x_center_normalized > 0.5 + servo_threshold:
-
-        if servo_position > servo_minimum_position:
-            target_position = servo_position - servo_step
-            direction = "left"
-
-        else:
-            direction = "limit reached (left)"
-
-    elif x_center_normalized < 0.5 - servo_threshold:
-
-        if servo_position < servo_maximum_position:
-            target_position = servo_position + servo_step
-            direction = "right"
-
-        else:
-            direction = "limit reached (right)"
+    elif x_center_normalized < 0.5 - camera_threshold:
+        direction = "right"
 
     else: # Else (if the person is roughly in the middle):
         direction = "centered" # Set direction to "centered"
 
-    target_position = max(servo_minimum_position, min(servo_maximum_position, target_position))
-
-    if abs(target_position - servo_position) >= servo_change_threshold:
-
-        servo_steps = int(abs(target_position - servo_position) / servo_smooth_speed)
-
-        if target_position > servo_position:
-            direction_sign = 1
-
-        else:
-            direction_sign = -1
-
-        for _ in range(servo_steps):
-            servo_position += direction_sign * servo_smooth_speed
-            servo.value = servo_position
-            time.sleep(servo_step_delay)
-
-    angle = (servo_position + 1) * 90
-
-    print(f"Person x: {x_center_normalized:.2f} | Servo pos: {servo_position:.2f} | Angle: {angle:.1f}° | Direction: {direction}")
-
-    return angle, direction
+    print(f"Person x: {x_center_normalized:.2f}| Direction: {direction}")
+    
+    return direction
 
 def get_tracking_data():
 
@@ -357,7 +294,6 @@ def get_tracking_data():
         None
     
     Returns:
-        "angle":
         "direction":
         "obstacle":
         "person_area_normalized":
@@ -373,14 +309,14 @@ def get_tracking_data():
             person_detections.append(detection) # Collect each person detection in a list
 
     person_area_normalized = None
-    angle, direction = 90, "none"
+    direction = "none"
 
     if person_detections: # If there are any person detections:
         person = person_detections[0] # Select the first one
         x, _, width, height = person.box # Extract its bounding box data
         x_center = x + width / 2 # Find the horizontal center of the detected person (in pixels)
         x_center_normalized = x_center / camera_frame_width # Converts pixel position into normalized value between 0 and 1
-        angle, direction = update_servo_tracking(x_center_normalized) # Updates the servo position by calling "update_servo_tracking" with the normalized x-position
+        direction = get_direction(x_center_normalized) # Updates the servo position by calling "update_servo_tracking" with the normalized x-position
         #person_height_normalized = height / camera_frame_height # Calculates the person height relative to the camera frame height
         person_area_normalized = (width * height) / camera_frame_area
 
@@ -401,7 +337,7 @@ def get_tracking_data():
                 obstacle_detected = True
                 break
 
-    return angle, direction, obstacle_detected, person_area_normalized
+    return direction, obstacle_detected, person_area_normalized
 
 # --- Camera setup ---
 
@@ -446,7 +382,7 @@ if __name__ == "__main__":
 
     try:
         while True:
-            angle, direction, obstacle, person_area = get_tracking_data()
+            direction, obstacle, person_area = get_tracking_data()
 
             if person_area:
                 print(f"Person area (normalized): {person_area:.2f}")
