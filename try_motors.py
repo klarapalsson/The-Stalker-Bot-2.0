@@ -1,108 +1,114 @@
 #!/usr/bin/env python3
 """
-test_motors_right_inverted.py
-Test script for two DC motors via L293D where the RIGHT motor is wired reversed.
-This script always inverts the right motor in software so "forward" drives both
-wheels forward (compensating for the wiring).
+dual_motor_test.py
+Test script for two DC motors on an L293D using two separate EN pins
+(GPIO18 for left motor, GPIO19 for right motor).
+Right motor logic is inverted to compensate for wiring direction.
 """
 
 import RPi.GPIO as GPIO
 import time
 
-# --- Pin setup (BCM) ---
-EN_PIN = 18
+# --- Pin definitions (BCM) ---
+EN_LEFT  = 18   # L293D EN1
+EN_RIGHT = 19   # L293D EN2
+IN1 = 23        # Left motor direction A
+IN2 = 24        # Left motor direction B
+IN3 = 27        # Right motor direction A
+IN4 = 22        # Right motor direction B
 
-# Left motor (Motor A) direction pins
-MOTOR_A_IN1 = 23
-MOTOR_A_IN2 = 24
-
-# Right motor (Motor B) direction pins (wired reversed)
-MOTOR_B_IN3 = 27
-MOTOR_B_IN4 = 22
-
+# --- Setup ---
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(EN_PIN, GPIO.OUT)
-GPIO.setup(MOTOR_A_IN1, GPIO.OUT)
-GPIO.setup(MOTOR_A_IN2, GPIO.OUT)
-GPIO.setup(MOTOR_B_IN3, GPIO.OUT)
-GPIO.setup(MOTOR_B_IN4, GPIO.OUT)
+for pin in [IN1, IN2, IN3, IN4, EN_LEFT, EN_RIGHT]:
+    GPIO.setup(pin, GPIO.OUT)
 
-# Enable both motors
-GPIO.output(EN_PIN, GPIO.HIGH)
+# PWM setup for both motors (frequency ~1000Hz)
+pwm_left = GPIO.PWM(EN_LEFT, 1000)
+pwm_right = GPIO.PWM(EN_RIGHT, 1000)
+pwm_left.start(100)   # Full speed
+pwm_right.start(100)  # Full speed
 
-# --- Motor helper functions ---
+# --- Motor control functions ---
+def left_forward():
+    GPIO.output(IN1, GPIO.HIGH)
+    GPIO.output(IN2, GPIO.LOW)
 
-# Left motor (normal logic)
-def motor_a_forward():
-    GPIO.output(MOTOR_A_IN1, GPIO.HIGH)
-    GPIO.output(MOTOR_A_IN2, GPIO.LOW)
+def left_backward():
+    GPIO.output(IN1, GPIO.LOW)
+    GPIO.output(IN2, GPIO.HIGH)
 
-def motor_a_backward():
-    GPIO.output(MOTOR_A_IN1, GPIO.LOW)
-    GPIO.output(MOTOR_A_IN2, GPIO.HIGH)
+# Right motor is inverted
+def right_forward():
+    GPIO.output(IN3, GPIO.LOW)
+    GPIO.output(IN4, GPIO.HIGH)
 
-# Right motor (ALWAYS inverted in software to compensate wiring)
-def motor_b_forward():
-    # Because the right motor is wired reversed, we drive the opposite hardware signals
-    GPIO.output(MOTOR_B_IN3, GPIO.LOW)
-    GPIO.output(MOTOR_B_IN4, GPIO.HIGH)
-
-def motor_b_backward():
-    GPIO.output(MOTOR_B_IN3, GPIO.HIGH)
-    GPIO.output(MOTOR_B_IN4, GPIO.LOW)
+def right_backward():
+    GPIO.output(IN3, GPIO.HIGH)
+    GPIO.output(IN4, GPIO.LOW)
 
 def stop_all():
-    GPIO.output(MOTOR_A_IN1, GPIO.LOW)
-    GPIO.output(MOTOR_A_IN2, GPIO.LOW)
-    GPIO.output(MOTOR_B_IN3, GPIO.LOW)
-    GPIO.output(MOTOR_B_IN4, GPIO.LOW)
+    GPIO.output(IN1, GPIO.LOW)
+    GPIO.output(IN2, GPIO.LOW)
+    GPIO.output(IN3, GPIO.LOW)
+    GPIO.output(IN4, GPIO.LOW)
 
-# --- High level movements ---
-def forward(duration=2):
-    motor_a_forward()
-    motor_b_forward()
+# --- High-level movements ---
+def forward(duration=2, speed=100):
+    pwm_left.ChangeDutyCycle(speed)
+    pwm_right.ChangeDutyCycle(speed)
+    left_forward()
+    right_forward()
     time.sleep(duration)
     stop_all()
 
-def backward(duration=2):
-    motor_a_backward()
-    motor_b_backward()
+def backward(duration=2, speed=100):
+    pwm_left.ChangeDutyCycle(speed)
+    pwm_right.ChangeDutyCycle(speed)
+    left_backward()
+    right_backward()
     time.sleep(duration)
     stop_all()
 
-def turn_left(duration=1):
-    # left turn: left wheel backward, right wheel forward
-    motor_a_backward()
-    motor_b_forward()
+def turn_left(duration=1, speed=100):
+    pwm_left.ChangeDutyCycle(speed)
+    pwm_right.ChangeDutyCycle(speed)
+    left_backward()
+    right_forward()
     time.sleep(duration)
     stop_all()
 
-def turn_right(duration=1):
-    # right turn: left wheel forward, right wheel backward
-    motor_a_forward()
-    motor_b_backward()
+def turn_right(duration=1, speed=100):
+    pwm_left.ChangeDutyCycle(speed)
+    pwm_right.ChangeDutyCycle(speed)
+    left_forward()
+    right_backward()
     time.sleep(duration)
     stop_all()
 
-# --- Main test sequence ---
+# --- Main test ---
 if __name__ == "__main__":
     try:
-        print("Motor direction test (right motor permanently inverted). Ctrl+C to stop.")
+        print("Dual-motor test starting (right motor inverted).")
         time.sleep(1)
 
-        print("Forward for 2s")
+        print("Forward")
         forward(2)
 
-        print("Backward for 2s")
+        print("Backward")
         backward(2)
 
-        print("Turn left for 1s")
+        print("Turn left")
         turn_left(1)
 
-        print("Turn right for 1s")
+        print("Turn right")
         turn_right(1)
 
-        print("Finished. Stopping motors.")
+        print("Speed test 50% forward")
+        pwm_left.ChangeDutyCycle(50)
+        pwm_right.ChangeDutyCycle(50)
+        left_forward()
+        right_forward()
+        time.sleep(2)
         stop_all()
 
     except KeyboardInterrupt:
@@ -110,6 +116,6 @@ if __name__ == "__main__":
         stop_all()
 
     finally:
-        # Disable motors and cleanup GPIO
-        GPIO.output(EN_PIN, GPIO.LOW)
+        pwm_left.stop()
+        pwm_right.stop()
         GPIO.cleanup()
