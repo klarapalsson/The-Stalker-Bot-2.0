@@ -1,68 +1,61 @@
 #!/usr/bin/env python3
 """
-test_motors_inverted_right.py
-Same test as before but inverts the right motor in software so that
-"forward" moves both wheels forward (although the right motor is wired reversed).
+test_motors_right_inverted.py
+Test script for two DC motors via L293D where the RIGHT motor is wired reversed.
+This script always inverts the right motor in software so "forward" drives both
+wheels forward (compensating for the wiring).
 """
 
 import RPi.GPIO as GPIO
 import time
 
 # --- Pin setup (BCM) ---
-en_pin = 18
+EN_PIN = 18
 
-motor_a_in1 = 23   # Left motor dir pin 1 (IN1)
-motor_a_in2 = 24   # Left motor dir pin 2 (IN2)
+# Left motor (Motor A) direction pins
+MOTOR_A_IN1 = 23
+MOTOR_A_IN2 = 24
 
-motor_b_in3 = 27   # Right motor dir pin 1 (IN3)
-motor_b_in4 = 22   # Right motor dir pin 2 (IN4)
-
-# If True, motor B outputs are logically inverted (wired reversed)
-INVERT_MOTOR_B = True
+# Right motor (Motor B) direction pins (wired reversed)
+MOTOR_B_IN3 = 27
+MOTOR_B_IN4 = 22
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(en_pin, GPIO.OUT)
-GPIO.setup(motor_a_in1, GPIO.OUT)
-GPIO.setup(motor_a_in2, GPIO.OUT)
-GPIO.setup(motor_b_in3, GPIO.OUT)
-GPIO.setup(motor_b_in4, GPIO.OUT)
+GPIO.setup(EN_PIN, GPIO.OUT)
+GPIO.setup(MOTOR_A_IN1, GPIO.OUT)
+GPIO.setup(MOTOR_A_IN2, GPIO.OUT)
+GPIO.setup(MOTOR_B_IN3, GPIO.OUT)
+GPIO.setup(MOTOR_B_IN4, GPIO.OUT)
 
 # Enable both motors
-GPIO.output(en_pin, GPIO.HIGH)
+GPIO.output(EN_PIN, GPIO.HIGH)
 
-# --- Motor helpers ---
+# --- Motor helper functions ---
+
+# Left motor (normal logic)
 def motor_a_forward():
-    GPIO.output(motor_a_in1, GPIO.HIGH)
-    GPIO.output(motor_a_in2, GPIO.LOW)
+    GPIO.output(MOTOR_A_IN1, GPIO.HIGH)
+    GPIO.output(MOTOR_A_IN2, GPIO.LOW)
 
 def motor_a_backward():
-    GPIO.output(motor_a_in1, GPIO.LOW)
-    GPIO.output(motor_a_in2, GPIO.HIGH)
+    GPIO.output(MOTOR_A_IN1, GPIO.LOW)
+    GPIO.output(MOTOR_A_IN2, GPIO.HIGH)
 
+# Right motor (ALWAYS inverted in software to compensate wiring)
 def motor_b_forward():
-    """Logical forward for Motor B (compensates if inverted)."""
-    if INVERT_MOTOR_B:
-        # wired reversed, so to go logical-forward we must drive hardware-backward
-        GPIO.output(motor_b_in3, GPIO.LOW)
-        GPIO.output(motor_b_in4, GPIO.HIGH)
-    else:
-        GPIO.output(motor_b_in3, GPIO.HIGH)
-        GPIO.output(motor_b_in4, GPIO.LOW)
+    # Because the right motor is wired reversed, we drive the opposite hardware signals
+    GPIO.output(MOTOR_B_IN3, GPIO.LOW)
+    GPIO.output(MOTOR_B_IN4, GPIO.HIGH)
 
 def motor_b_backward():
-    """Logical backward for Motor B (compensates if inverted)."""
-    if INVERT_MOTOR_B:
-        GPIO.output(motor_b_in3, GPIO.HIGH)
-        GPIO.output(motor_b_in4, GPIO.LOW)
-    else:
-        GPIO.output(motor_b_in3, GPIO.LOW)
-        GPIO.output(motor_b_in4, GPIO.HIGH)
+    GPIO.output(MOTOR_B_IN3, GPIO.HIGH)
+    GPIO.output(MOTOR_B_IN4, GPIO.LOW)
 
 def stop_all():
-    GPIO.output(motor_a_in1, GPIO.LOW)
-    GPIO.output(motor_a_in2, GPIO.LOW)
-    GPIO.output(motor_b_in3, GPIO.LOW)
-    GPIO.output(motor_b_in4, GPIO.LOW)
+    GPIO.output(MOTOR_A_IN1, GPIO.LOW)
+    GPIO.output(MOTOR_A_IN2, GPIO.LOW)
+    GPIO.output(MOTOR_B_IN3, GPIO.LOW)
+    GPIO.output(MOTOR_B_IN4, GPIO.LOW)
 
 # --- High level movements ---
 def forward(duration=2):
@@ -91,10 +84,10 @@ def turn_right(duration=1):
     time.sleep(duration)
     stop_all()
 
-# --- Test sequence ---
+# --- Main test sequence ---
 if __name__ == "__main__":
     try:
-        print("Motor direction test (right motor inverted in software). Ctrl+C to stop.")
+        print("Motor direction test (right motor permanently inverted). Ctrl+C to stop.")
         time.sleep(1)
 
         print("Forward for 2s")
@@ -117,5 +110,6 @@ if __name__ == "__main__":
         stop_all()
 
     finally:
-        GPIO.output(en_pin, GPIO.LOW)
+        # Disable motors and cleanup GPIO
+        GPIO.output(EN_PIN, GPIO.LOW)
         GPIO.cleanup()
