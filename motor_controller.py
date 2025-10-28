@@ -132,7 +132,7 @@ def stop():
 
 # --- Movement functions ---
 
-def forward(duration = 2, speed = 100):
+def forward(direction ="centered", duration = 2, speed = 100):
 
     """
     Makes the robot go forward.
@@ -144,9 +144,13 @@ def forward(duration = 2, speed = 100):
         None
     
     """
+    if direction = "right":
 
-    PWM_LEFT_MOTOR.ChangeDutyCycle(speed)
-    PWM_RIGHT_MOTOR.ChangeDutyCycle(speed)
+    if direction = "left":
+
+    if direction ="centered":
+        PWM_LEFT_MOTOR.ChangeDutyCycle(speed)
+        PWM_RIGHT_MOTOR.ChangeDutyCycle(speed)
 
     left_motor_forward()
     right_motor_forward()
@@ -155,7 +159,7 @@ def forward(duration = 2, speed = 100):
 
     stop()
 
-def backwards(duration = 2, speed = 100):
+def backwards(direction="centered", duration = 2, speed = 100):
 
     """
     Makes the robot go backwards.
