@@ -4,32 +4,16 @@
 import RPi.GPIO as GPIO
 import time
 import ai_detection
-from remote_controller import press, unpress, check_button_press, move_backwards_button_pin, move_forward_button_pin, turn_left_button_pin, turn_right_button_pin
 from ultrasonic_sensor import get_distance
 from motor_controller import EN_PIN1, EN_PIN2, forward, backward, turn_left, turn_right, stop_all as stop
 
 # --- General definitions ---
-
-turn_time_per_degree = 0.9 / 90
-
 target_minimum_area = 0.35
 target_maximum_area = 0.5
 
 safe_distance_in_cm = 50
 
-max_angle_offset = 10
-
 follow_loop_update_time = 0.1
-
-# --- Timer definitions ---
-
-first_timer = 0
-first_timer_off = True
-first_wait_time = 1
-
-second_timer = 0
-second_timer_off = True
-second_wait_time = 0.1
 
 # --- Log initialization ---
 
@@ -113,28 +97,8 @@ def follow():
         
         print_and_log(f"Person takes up {person_area:.2f} of the total frame size")
 
-        if not (person_area < target_minimum_area): # person is not too far away
-
-            # resets the first timer if second timer is within wait time
-            if (time.time() - second_timer < second_wait_time): 
-                first_timer_off = True
-
-            # turns the second timer on
-            if second_timer_off:
-                second_timer = time.time()
-                second_timer_off = False
-
         if person_area < target_minimum_area:
 
-            # resets the second timer when person is too far away
-            second_timer_off = True
-
-            # turns the first timer on
-            if first_timer_off:
-                first_timer = time.time()
-                first_timer_off = False
-
-                        
             print_and_log("Person is too far away, trying to move forward...")
 
             forward()
