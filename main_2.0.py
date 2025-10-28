@@ -6,7 +6,7 @@ import time
 import ai_detection
 from remote_controller import press, unpress, check_button_press, move_backwards_button_pin, move_forward_button_pin, turn_left_button_pin, turn_right_button_pin
 from ultrasonic_sensor import get_distance
-from motor_controller import EN_PIN
+from motor_controller import EN_PIN1, EN_PIN2, forward, backward, turn_left, turn_right, stop_all as stop
 
 # --- General definitions ---
 
@@ -59,87 +59,6 @@ def print_and_log(message):
         f.write("\n" + message)
 
     ai_detection.video_status_text = message # Update the video status text in the AI detection module
-        
-def move_forward():
-
-    """
-    Moves the car forward.
-
-    Arguments:
-        "press_duration": The duration of the simulated button press.
-
-    Returns:
-        None
-
-    """
-
-    unpress(move_backwards_button_pin)
-    press(move_forward_button_pin)
-
-def move_backwards():
-
-    """
-    Moves the car backwards.
-
-    Arguments:
-        "press_duration": The duration of the simulated button press (default set to 0.3 s).
-
-    Returns:
-        None
-        
-    """
-    
-    unpress(move_forward_button_pin)
-    press(move_backwards_button_pin)
-
-def stop():
-
-    """
-    Stops the car.
-
-    Arguments:
-        None
-    
-    Returns:
-        None
-
-    """
-
-    unpress(move_forward_button_pin)
-    unpress(move_backwards_button_pin)
-
-def turn(direction, angle):
-
-    """
-    Turns the car.
-
-    Arguments:
-        "direction": The turning direction.
-        "angle": The angle to the person.
-
-    Returns:
-        None
-    
-    """
-
-    #if time.time() - first_timer > first_wait_time:
-
-    if direction == "right" and not check_button_press(turn_right_button_pin):
-        unpress(turn_left_button_pin)
-        time.sleep(0.01)
-        press(turn_right_button_pin)
-
-    if direction == "left" and not check_button_press(turn_left_button_pin):
-        unpress(turn_right_button_pin)
-        time.sleep(0.01)
-        press(turn_left_button_pin)
-
-    if direction == "middle":
-        unpress(turn_right_button_pin)
-        unpress(turn_left_button_pin)
-        return
-
-    print_and_log(f"Turning {direction}! Servo angle: {angle:.1f} degrees")
 
 def avoid_obstacle():
 
@@ -182,13 +101,13 @@ def follow():
 
         if obstacle or distance_in_cm <= safe_distance_in_cm: # If either the AI camera or the ultrasonic sensor detects an obstacle:
             print_and_log("Trying to avoid an obstacle...")
-            turn("middle", angle)
+            forward()
             avoid_obstacle()
             continue
             
         if person_area is None:
             print_and_log("No person detected, waiting...")
-            turn("middle", angle)
+            forward()
             stop()
             continue
         
@@ -218,37 +137,37 @@ def follow():
                         
             print_and_log("Person is too far away, trying to move forward...")
 
-            move_forward()
+            forward()
 
             if direction == "centered":
 
                 if abs(angle - 90) > max_angle_offset:
 
                     if angle < 90:
-                        turn("right", angle)
+                        turn_right(angle)
                     
                     else:
-                        turn("left", angle)
+                        turn_left(angle)
                     
                     continue
                 
                 else:
-                    turn("middle", angle)
+                    forward()
             
             elif direction in ("limit reached (left)", "limit reached (right)"):
 
                 if angle < 90:
-                    turn("right", angle)
+                    turn_right(angle)
                     
                 else:
-                    turn("left", angle)
+                    turn_left(angle)
 
                 continue
 
         elif person_area > target_maximum_area:
             print_and_log("Person is too close, moving backwards...")
-            turn("middle", angle)
-            move_backwards()
+            forward()
+            backward()
 
         else:
             print_and_log("Distance is OK, stopping...")
@@ -267,6 +186,7 @@ if __name__ == "__main__":
         stop()
     finally:
         # Disable motors and cleanup GPIO
-        GPIO.output(EN_PIN, GPIO.LOW)
+        GPIO.output(EN_PIN1, GPIO.LOW)
+        GPIO.output(EN_PIN2, GPIO.LOW)
         GPIO.cleanup()
 

@@ -15,7 +15,8 @@ from main import print_and_log
 handle = lgpio.gpiochip_open(0) # Opens GPIO controller 0 and returns a handle
 
 # --- Pin setup (BCM) ---
-EN_PIN = 18
+EN_PIN1 = 18
+EN_PIN2 = 19
 
 # Left motor (Motor L) direction pins
 MOTOR_L_IN1 = 23
@@ -26,14 +27,16 @@ MOTOR_R_IN3 = 27
 MOTOR_R_IN4 = 22
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(EN_PIN, GPIO.OUT)
+GPIO.setup(EN_PIN1, GPIO.OUT)
+GPIO.setup(EN_PIN2, GPIO.OUT)
 GPIO.setup(MOTOR_L_IN1, GPIO.OUT)
 GPIO.setup(MOTOR_L_IN2, GPIO.OUT)
 GPIO.setup(MOTOR_R_IN3, GPIO.OUT)
 GPIO.setup(MOTOR_R_IN4, GPIO.OUT)
 
 # Enable both motors
-GPIO.output(EN_PIN, GPIO.HIGH)
+GPIO.output(EN_PIN1, GPIO.HIGH)
+GPIO.output(EN_PIN2, GPIO.HIGH)
 
 # --- Functions ---
 
