@@ -96,31 +96,14 @@ def follow():
         if person_area < target_minimum_area:
             
             print_and_log("Person is too far away, trying to move forward...")
+            forward(direction)
             
-            if direction == "right":
-                turn_right_forward()
-
-            elif direction == "left":
-                turn_left_forward()
-
-            else:
-                forward()
-                
         elif person_area > target_maximum_area:
             print_and_log("Person is too close, moving backwards...")
-
-            if direction == "right":
-                turn_right_backwards()
-
-            elif direction == "left":
-                turn_left_backwards()
-
-            else:
-                backwards()
-
+            backwards(direction)
         else:
             print_and_log("Distance is OK, stopping...")
-
+        
             if direction == "right":
                 tank_turn_clockwise()
 
