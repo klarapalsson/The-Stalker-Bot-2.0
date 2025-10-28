@@ -34,7 +34,7 @@ for pin in ALL_PINS:
 for pin in MOTOR_ENABLING_PINS:
     GPIO.output(pin, GPIO.HIGH) # Enables the motors by setting their enabling pins HIGH
 
-# --- Functions ---
+# --- Motor controlling functions ---
 
 # Left motor
 
@@ -120,7 +120,7 @@ def stop():
     for pin in MOTOR_INPUT_PINS:
         GPIO.output(pin, GPIO.LOW)
 
-# Movement
+# --- Movement functions ---
 
 def forward():
 
@@ -157,7 +157,7 @@ def backwards():
 def tank_turn_counterclockwise():
 
     """
-    Makes the robot do a tank turn counterclockwise.
+    Makes the robot tank turn counterclockwise.
 
     Arguments:
         None
@@ -173,7 +173,7 @@ def tank_turn_counterclockwise():
 def tank_turn_clockwise():
 
     """
-    Makes the robot do a tank turn clockwise.
+    Makes the robot tank turn clockwise.
 
     Arguments:
         None
@@ -185,3 +185,19 @@ def tank_turn_clockwise():
 
     left_motor_forward()
     right_motor_backwards()
+
+def disable_motors():
+
+    """
+    Disables the motors by setting their enabling pins LOW.
+
+    Arguments:
+        None
+    
+    Returns:
+        None
+
+    """
+
+    for pin in MOTOR_ENABLING_PINS:
+        GPIO.output(pin, GPIO.LOW)

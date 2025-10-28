@@ -1,13 +1,13 @@
 
 # --- Imports ---
 
-import RPi.GPIO as GPIO
 import time
 import ai_detection
 from ultrasonic_sensor import get_distance
-from motor_controller import EN_PIN1, EN_PIN2, forward, backward, turn_left, turn_right, turn_left_forward, turn_left_backward, turn_right_forward, turn_right_backward, stop_all as stop
+from motor_controller import forward, backwards, tank_turn_counterclockwise, tank_turn_clockwise, stop, disable_motors
 
 # --- General definitions ---
+
 target_minimum_area = 0.35
 target_maximum_area = 0.5
 
@@ -110,22 +110,22 @@ def follow():
             print_and_log("Person is too close, moving backwards...")
 
             if direction == "right":
-                turn_right_backward()
+                turn_right_backwards()
 
             elif direction == "left":
-                turn_left_backward()
+                turn_left_backwards()
 
             else:
-                backward()
+                backwards()
 
         else:
             print_and_log("Distance is OK, stopping...")
 
-             if direction == "right":
-                turn_right()
+            if direction == "right":
+                tank_turn_clockwise()
 
             elif direction == "left":
-                turn_left()
+                tank_turn_counterclockwise()
 
             else:
                 stop()
@@ -141,9 +141,6 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         stop()
+        
     finally:
-        # Disable motors and cleanup GPIO
-        GPIO.output(EN_PIN1, GPIO.LOW)
-        GPIO.output(EN_PIN2, GPIO.LOW)
-        GPIO.cleanup()
-
+        disable_motors()
