@@ -7,8 +7,8 @@ from main import stop, move_backwards, move_forward, turn, follow
 
 # --- Servo definitions ---
 
-servo_maximum_position = 1 # looking right
-servo_minimum_position = -1 # looking left
+servo_maximum_position = 1 # Looking right
+servo_minimum_position = -1 # Looking left
 servo_minimum_pulse_width = 0.5 / 1000
 servo_maximum_pulse_width = 2.5 / 1000
 servo_step = 0.04
@@ -41,20 +41,13 @@ def avoid_obstacle():
      obstacle_note_front = False
      obstacle_note_side = False
      timer = 0
-     angle, direction, obstacle, person_height = ai_detection.get_tracking_data() # Gets necessary data from the AI camera
+     angle, direction, obstacle, person_area = ai_detection.get_tracking_data() # Gets necessary data from the AI camera
 
 
      print("\nStopping...")
      stop() # stop
 
-     print("\nMoving backwards...")
-     
-     timer = time.time() # Start the timer
-     while time.time() - timer < 1: # Move backwards for 1 seconds
-          move_backwards()
-     
-
-     if person_height is not None: # if person
+     if person_area is not None: # if person
           if direction == "centered": # if centered
               
                print("\nChecking left...")
@@ -65,8 +58,6 @@ def avoid_obstacle():
                     go_around_left() # go_around_left()
 
                     print("\nNow following...")
-                    follow() # following after going around
-
                     return
 
                else: # else obstacle   
@@ -78,13 +69,11 @@ def avoid_obstacle():
                          go_around_right() # go around right 
 
                          print("\nNow following...")
-                         follow() # following after going around
-
                          return
 
 
 
-     if person_height is None: # if no person
+     if person_area is None: # if no person
 
           if direction == "centered":
                print("\nNotes if there is an obstacle or not")
@@ -95,7 +84,7 @@ def avoid_obstacle():
                print("\nNo person detected, checking left...")
                check_left() # check left
 
-               if person_height is not None: # checks if theres a person the left
+               if person_area is not None: # checks if theres a person the left
 
                     print("\nNoting if there's an obstacle to the right")
                     check_right() # checking right
@@ -106,19 +95,20 @@ def avoid_obstacle():
 
                     if not obstacle: # if no obstacle to the left
                          print("\nPerson found, following...")
-                         follow() # follow
-
                          return
                     
                     elif obstacle: # elif person and obstacle to the left
 
                          """
                          
-                         backing to right so that the person is straight ahead
+                         Turning to the left so that the person is straight ahead.
 
-                         now facing the past left
+                         Now facing the past left.
 
                          """
+
+                         print("\nTurning left so that the person is straight ahead...")
+                         turning_left() # turning left
 
                          if obstacle_note_front: # if there's an obstacle to the right
                               print("\nObstacle on the right, checking left...")
@@ -129,31 +119,24 @@ def avoid_obstacle():
                                    go_around_left() # go around left
 
                                    print("\nNow following...")
-                                   follow() # following after going around
-
                                    return
 
-                              elif obstacle_note_side: # sorrounded by obstacles
-                                   print("\nSorrounded by obstacles, stopping...")
+                              elif obstacle_note_side: # elif surrounded by obstacles
+                                   print("\nSurrounded by obstacles, stopping...")
                                    stop() # stopping
 
                                    return
                               
                               else: # else no obstacle behind
 
-                                   """
-                                   
-                                   backing out
-                                   
-                                   """
+                                   print("\nNo obstacle behind, backing out...")
+                                   move_backwards() # backing out
 
                          else: # else there is no obstacle to the right
                               print("\nNo obstacle to the right, going around...")
                               go_around_right() # going around right
 
                               print("\nNow following...")
-                              follow() # following after going around
-
                               return
 
                # Checking Left
@@ -164,7 +147,7 @@ def avoid_obstacle():
                     print("\nNo person to the left, checking right...")
                     check_right() # check right
                
-                    if person_height is not None: # person to the right 
+                    if person_area is not None: # person to the right 
 
                          print("\nNoting if there's an obstacle to the left...")
                          check_left() # check left
@@ -175,19 +158,20 @@ def avoid_obstacle():
 
                          if not obstacle: # if no obstacle
                               print("\nPerson found, following...")
-                              follow() # follow
-
                               return
 
                          elif obstacle: # elif obstacle
 
                               """
                          
-                              backing to left so that the person is straight ahead
+                              Turning right so that the person is straight ahead.
 
-                              now facing the past right
+                              Now facing the past right.
 
                               """
+
+                              print("\nTurning right so that the person is straight ahead...")
+                              turning_right() # turning right
 
                               if obstacle_note_front: # if there's an obstacle to the left
                                    print("\nObstacle to the left, checking right again...")
@@ -198,31 +182,24 @@ def avoid_obstacle():
                                         go_around_right # going around right
                                         
                                         print("\nNow following...")
-                                        follow() # following
-
                                         return
                                    
-                                   elif obstacle_note_side: # else sorrounded by obstacles
-                                        print("\nSorrounded by obstacles, stopping...")
+                                   elif obstacle_note_side: # elif surrounded by obstacles
+                                        print("\nSurrounded by obstacles, stopping...")
                                         stop() #stopping
 
                                         return
                                    
                                    else: # else no obstacle behind
 
-                                        """
-                                        
-                                        backing out
-                                        
-                                        """
+                                        print("\nNo obstacle behind, backing out...")
+                                        move_backwards() # backing out
 
                               else: # else no obstacle on left side
                                    print("\nNo obstacle to the left, going around...")
                                    go_around_left() # going around left
 
                                    print("\nNow following...")
-                                   follow() # following
-
                                    return
                               
                # Checking Right
@@ -243,7 +220,7 @@ def go_around_left():
 
      turn left until obstacle is not detected
 
-     possibly holding the obstacle to 45 or 90 degrees of car
+     possibly holding the obstacle to 45 or 90 degrees of the car
 
      """
 
@@ -257,11 +234,33 @@ def go_around_right():
 
      turn right until obstacle is not detected
 
+     possibly holding the obstacle to 45 or 90 degrees of the car
+
      """
 
      move_forward()
      turn("right",0) 
      turn("left", 180) 
+
+def turning_left():
+
+     """
+     
+     turning 90 degrees to the left
+     
+     """
+
+     #whoop whoop
+
+def turning_right():
+
+     """
+     
+     turning 90 degrees to the right
+     
+     """
+
+     #walla bapbap
     
 def check_left():
 
