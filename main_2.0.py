@@ -63,9 +63,6 @@ def avoid_obstacle():
 # --- Main program loop ---
 
 def follow():
-
-    global first_timer, second_timer, first_timer_off, second_timer_off
-
     """
     Runs the person-following loop.
 
@@ -79,7 +76,7 @@ def follow():
 
     while True:
 
-        angle, direction, obstacle, person_area = ai_detection.get_tracking_data() # Gets necessary data from the AI camera
+        direction, obstacle, person_area = ai_detection.get_tracking_data() # Gets necessary data from the AI camera
 
         distance_in_cm = get_distance() # Gets distance to closest obstacle from ultrasonic sensor    
 
@@ -103,34 +100,15 @@ def follow():
 
             forward()
 
-            if direction == "centered":
+        if direction == "right":
+            turn_right()
 
-                if abs(angle - 90) > max_angle_offset:
+        if direction == "left":
+            turn_left()
 
-                    if angle < 90:
-                        turn_right(angle)
-                    
-                    else:
-                        turn_left(angle)
-                    
-                    continue
-                
-                else:
-                    forward()
-            
-            elif direction in ("limit reached (left)", "limit reached (right)"):
-
-                if angle < 90:
-                    turn_right(angle)
-                    
-                else:
-                    turn_left(angle)
-
-                continue
 
         elif person_area > target_maximum_area:
             print_and_log("Person is too close, moving backwards...")
-            forward()
             backward()
 
         else:
