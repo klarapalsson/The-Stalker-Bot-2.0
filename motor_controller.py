@@ -5,30 +5,25 @@ import RPi.GPIO as GPIO
 
 # --- Definitions ---
 
-# Motor enabling pins
+# Left motor pins
 
-MOTOR_ENABLING_PIN_1 = 18
-MOTOR_ENABLING_PIN_2 = 19
-
-MOTOR_ENABLING_PINS = [MOTOR_ENABLING_PIN_1, MOTOR_ENABLING_PIN_2]
-
-# Left motor input pins
+LEFT_MOTOR_ENABLING_PIN = 18
 
 LEFT_MOTOR_INPUT_PIN_1 = 23
 LEFT_MOTOR_INPUT_PIN_2 = 24
 
-LEFT_MOTOR_INPUT_PINS = [LEFT_MOTOR_INPUT_PIN_1, LEFT_MOTOR_INPUT_PIN_2]
+# Right motor pins
 
-# Right motor input pins
+RIGHT_MOTOR_ENABLING_PIN = 19
 
 RIGHT_MOTOR_INPUT_PIN_3 = 27
 RIGHT_MOTOR_INPUT_PIN_4 = 22
 
-RIGHT_MOTOR_INPUT_PINS = [RIGHT_MOTOR_INPUT_PIN_3, RIGHT_MOTOR_INPUT_PIN_4]
+# Pin lists
 
-MOTOR_INPUT_PINS = LEFT_MOTOR_INPUT_PINS + RIGHT_MOTOR_INPUT_PINS
+MOTOR_INPUT_PINS = [LEFT_MOTOR_INPUT_PIN_1, LEFT_MOTOR_INPUT_PIN_2, RIGHT_MOTOR_INPUT_PIN_3, RIGHT_MOTOR_INPUT_PIN_4]
 
-ALL_PINS = MOTOR_ENABLING_PINS + MOTOR_INPUT_PINS
+ALL_PINS = LEFT_MOTOR_ENABLING_PIN + RIGHT_MOTOR_ENABLING_PIN + MOTOR_INPUT_PINS
 
 # --- Setup ---
 
@@ -37,7 +32,7 @@ GPIO.setmode(GPIO.BCM) # Sets pin numbering method to BCM
 for pin in ALL_PINS:
     GPIO.setup(pin, GPIO.OUT) # Sets all pins to outputs
 
-for pin in MOTOR_ENABLING_PINS:
+for pin in [LEFT_MOTOR_ENABLING_PIN, RIGHT_MOTOR_ENABLING_PIN]:
     GPIO.output(pin, GPIO.HIGH) # Enables the motors by setting their enabling pins HIGH
 
 # --- Motor controlling functions ---
@@ -205,5 +200,5 @@ def disable_motors():
 
     """
 
-    for pin in MOTOR_ENABLING_PINS:
+    for pin in [LEFT_MOTOR_ENABLING_PIN, RIGHT_MOTOR_ENABLING_PIN]:
         GPIO.output(pin, GPIO.LOW)

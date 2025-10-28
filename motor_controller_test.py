@@ -1,12 +1,8 @@
-#!/usr/bin/env python3
-"""
-dual_motor_test.py
-Test script for two DC motors on an L293D using two separate EN pins
-(GPIO18 for left motor, GPIO19 for right motor).
-Right motor logic is inverted to compensate for wiring direction.
-"""
+
+# --- Imports ---
 
 import RPi.GPIO as GPIO
+from motor_controller import MOTOR_ENABLING_PIN_1, MOTOR_ENABLING_PIN_2, LEFT_MOTOR_INPUT_PIN_1, LEFT_MOTOR_INPUT_PIN_2, RIGHT_MOTOR_INPUT_PIN_3, RIGHT_MOTOR_INPUT_PIN_4, ALL_PINS
 import time
 
 # --- Pin definitions (BCM) ---
