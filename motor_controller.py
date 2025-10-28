@@ -1,90 +1,187 @@
 
 # --- Imports ---
 
-import lgpio
 import RPi.GPIO as GPIO
-
-from main import print_and_log
 
 # --- Definitions ---
 
+MOTOR_ENABLING_PIN_1 = 18
+MOTOR_ENABLING_PIN_2 = 19
 
+MOTOR_ENABLING_PINS = [MOTOR_ENABLING_PIN_1, MOTOR_ENABLING_PIN_2]
+
+LEFT_MOTOR_INPUT_PIN_1 = 23
+LEFT_MOTOR_INPUT_PIN_2 = 24
+
+LEFT_MOTOR_INPUT_PINS = [LEFT_MOTOR_INPUT_PIN_1, LEFT_MOTOR_INPUT_PIN_2]
+
+RIGHT_MOTOR_INPUT_PIN_3 = 27
+RIGHT_MOTOR_INPUT_PIN_4 = 22
+
+RIGHT_MOTOR_INPUT_PINS = [RIGHT_MOTOR_INPUT_PIN_3, RIGHT_MOTOR_INPUT_PIN_4]
+
+MOTOR_INPUT_PINS = LEFT_MOTOR_INPUT_PINS + RIGHT_MOTOR_INPUT_PINS
+
+ALL_PINS = MOTOR_ENABLING_PINS + MOTOR_INPUT_PINS
 
 # --- Setup ---
 
-handle = lgpio.gpiochip_open(0) # Opens GPIO controller 0 and returns a handle
+GPIO.setmode(GPIO.BCM) # Sets pin numbering method to BCM
 
-# --- Pin setup (BCM) ---
-EN_PIN1 = 18
-EN_PIN2 = 19
+for pin in ALL_PINS:
+    GPIO.setup(pin, GPIO.OUT) # Sets all pins to outputs
 
-# Left motor (Motor L) direction pins
-MOTOR_L_IN1 = 23
-MOTOR_L_IN2 = 24
-
-# Right motor (Motor R) direction pins (wired reversed)
-MOTOR_R_IN3 = 27
-MOTOR_R_IN4 = 22
-
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(EN_PIN1, GPIO.OUT)
-GPIO.setup(EN_PIN2, GPIO.OUT)
-GPIO.setup(MOTOR_L_IN1, GPIO.OUT)
-GPIO.setup(MOTOR_L_IN2, GPIO.OUT)
-GPIO.setup(MOTOR_R_IN3, GPIO.OUT)
-GPIO.setup(MOTOR_R_IN4, GPIO.OUT)
-
-# Enable both motors
-GPIO.output(EN_PIN1, GPIO.HIGH)
-GPIO.output(EN_PIN2, GPIO.HIGH)
+for pin in MOTOR_ENABLING_PINS:
+    GPIO.output(pin, GPIO.HIGH) # Enables the motors by setting their enabling pins HIGH
 
 # --- Functions ---
 
-# Left motor (normal logic)
-def motor_l_forward():
-    GPIO.output(MOTOR_L_IN1, GPIO.HIGH)
-    GPIO.output(MOTOR_L_IN2, GPIO.LOW)
+# Left motor
 
-def motor_l_backward():
-    GPIO.output(MOTOR_L_IN1, GPIO.LOW)
-    GPIO.output(MOTOR_L_IN2, GPIO.HIGH)
+def left_motor_forward():
 
-# Right motor (ALWAYS inverted in software to compensate wiring)
-def motor_r_forward():
-    # Because the right motor is wired reversed, we drive the opposite hardware signals
-    GPIO.output(MOTOR_R_IN3, GPIO.LOW)
-    GPIO.output(MOTOR_R_IN4, GPIO.HIGH)
+    """
+    Makes the left motor go forward.
 
-def motor_r_backward():
-    GPIO.output(MOTOR_R_IN3, GPIO.HIGH)
-    GPIO.output(MOTOR_R_IN4, GPIO.LOW)
+    Arguments:
+        None
+    
+    Returns:
+        None
 
-def stop_all():
-    GPIO.output(MOTOR_L_IN1, GPIO.LOW)
-    GPIO.output(MOTOR_L_IN2, GPIO.LOW)
-    GPIO.output(MOTOR_R_IN3, GPIO.LOW)
-    GPIO.output(MOTOR_R_IN4, GPIO.LOW)
+    """
 
-# --- High level movements ---
+    GPIO.output(LEFT_MOTOR_INPUT_PIN_1, GPIO.HIGH)
+    GPIO.output(LEFT_MOTOR_INPUT_PIN_2, GPIO.LOW)
+
+def left_motor_backwards():
+
+    """
+    Makes the left motor go backwards.
+
+    Arguments:
+        None
+    
+    Returns:
+        None
+    
+    """
+
+    GPIO.output(LEFT_MOTOR_INPUT_PIN_1, GPIO.LOW)
+    GPIO.output(LEFT_MOTOR_INPUT_PIN_2, GPIO.HIGH)
+
+# Right motor (inverted)
+
+def right_motor_forward():
+
+    """
+    Makes the right motor go forward.
+
+    Arguments:
+        None
+    
+    Returns:
+        None
+
+    """
+
+    GPIO.output(RIGHT_MOTOR_INPUT_PIN_3, GPIO.LOW)
+    GPIO.output(RIGHT_MOTOR_INPUT_PIN_4, GPIO.HIGH)
+
+def right_motor_backwards():
+
+    """
+    Makes the right motor go backwards.
+
+    Arguments:
+        None
+    
+    Returns:
+        None
+    
+    """
+
+    GPIO.output(RIGHT_MOTOR_INPUT_PIN_3, GPIO.HIGH)
+    GPIO.output(RIGHT_MOTOR_INPUT_PIN_4, GPIO.LOW)
+
+def stop():
+
+    """
+    Makes both motors stop.
+
+    Arguments:
+        None
+    
+    Returns:
+        None
+    
+    """
+
+    for pin in MOTOR_INPUT_PINS:
+        GPIO.output(pin, GPIO.LOW)
+
+# Movement
+
 def forward():
-    motor_l_forward()
-    motor_r_forward()
 
-def backward():
-    motor_l_backward()
-    motor_r_backward()
+    """
+    Makes the robot go forward.
 
-def turn_left(angle):
-    # left turn: left wheel backward, right wheel forward
-    motor_l_backward()
-    motor_r_forward()
+    Arguments:
+        None
+    
+    Returns:
+        None
+    
+    """
 
-    print_and_log(f"Turning left! Servo angle: {angle:.1f} degrees")
+    left_motor_forward()
+    right_motor_forward()
 
-def turn_right(angle):
-    # right turn: left wheel forward, right wheel backward
-    motor_l_forward()
-    motor_r_backward()
+def backwards():
 
-    print_and_log(f"Turning right! Servo angle: {angle:.1f} degrees")
+    """
+    Makes the robot go backwards.
 
+    Arguments:
+        None
+    
+    Returns:
+        None
+    
+    """
+
+    left_motor_backwards()
+    right_motor_backwards()
+
+def tank_turn_counterclockwise():
+
+    """
+    Makes the robot do a tank turn counterclockwise.
+
+    Arguments:
+        None
+    
+    Returns:
+        None
+    
+    """
+
+    left_motor_backwards()
+    right_motor_forward()
+
+def tank_turn_clockwise():
+
+    """
+    Makes the robot do a tank turn clockwise.
+
+    Arguments:
+        None
+    
+    Returns:
+        None
+    
+    """
+
+    left_motor_forward()
+    right_motor_backwards()
