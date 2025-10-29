@@ -2,6 +2,7 @@
 # --- Imports ---
 
 import lgpio
+import time
 
 # --- Definitions ---
 
@@ -222,6 +223,8 @@ def tank_turn_clockwise(speed = 100):
     left_motor_forward()
     right_motor_backwards()
 
+# --- Miscellaneous functions ---
+
 def disable_motors():
 
     """
@@ -237,8 +240,6 @@ def disable_motors():
 
     for pin in [LEFT_MOTOR_ENABLING_PIN, RIGHT_MOTOR_ENABLING_PIN]:
         lgpio.gpio_write(CHIP_HANDLE, pin, 0)
-
-# --- Cleanup function ---
 
 def cleanup():
 
@@ -256,3 +257,69 @@ def cleanup():
     lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, 0)
     lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, 0)
     lgpio.gpiochip_close(CHIP_HANDLE)
+
+# --- Test ---
+
+if __name__ == "__main__":
+
+    try:
+
+        print("\nMotor controller test starting...")
+
+        print("\nTrying to move forward...")
+
+        forward("centered", 100, 1)
+        time.sleep(0.5)
+        stop()
+
+        forward("centered", 75, 1)
+        time.sleep(0.5)
+        stop()
+
+        forward("centered", 50, 1)
+        time.sleep(0.5)
+        stop()
+        
+        forward("centered", 25, 1)
+        time.sleep(0.5)
+        stop()
+
+        print("\nTrying to move backwards...")
+        
+        backwards("centered", 100, 1)
+        time.sleep(0.5)
+        stop()
+
+        backwards("centered", 75, 1)
+        time.sleep(0.5)
+        stop()
+
+        backwards("centered", 50, 1)
+        time.sleep(0.5)
+        stop()
+
+        backwards("centered", 25, 1)
+        time.sleep(0.5)
+        stop()
+
+        print("\nTrying to tank turn counterclockwise...")
+
+        tank_turn_counterclockwise(100)
+        time.sleep(0.5)
+        stop()
+
+        print("\nTrying to tank turn clockwise...")
+
+        tank_turn_clockwise(100)
+        time.sleep(0.5)
+        stop()
+
+    except KeyboardInterrupt:
+        print("\nInterrupted — stopping motors...")
+        stop()
+
+    finally:
+        stop()
+        disable_motors()
+        cleanup()
+        print("\nMotor controller test finished.\n")
