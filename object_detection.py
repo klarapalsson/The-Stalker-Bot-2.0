@@ -341,7 +341,7 @@ def get_tracking_data():
                 obstacle_detected = True
                 break
 
-    return direction, bias, obstacle_detected, person_area_normalized
+    return direction, bias, speed, obstacle_detected, person_area_normalized
 
 # --- Camera setup ---
 
@@ -386,10 +386,10 @@ if __name__ == "__main__":
 
     try:
         while True:
-            direction, obstacle, person_area = get_tracking_data()
+            direction, bias, speed, obstacle, person_area = get_tracking_data()
 
             if person_area:
-                print(f"Person area (normalized): {person_area:.2f}")
+                print(f"Person area (normalized): {person_area:.2f} | bias= {bias:.2f} | speed= {speed:.2f}")
 
             if obstacle:
                 print("Obstacle detected!")
