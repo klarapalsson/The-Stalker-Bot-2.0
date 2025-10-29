@@ -37,8 +37,8 @@ for pin in ALL_PINS:
 for pin in [LEFT_MOTOR_ENABLING_PIN, RIGHT_MOTOR_ENABLING_PIN]:
     lgpio.gpio_write(CHIP_HANDLE, pin, 1) # Enables the motors by setting their enabling pins HIGH
 
-PWM_LEFT_MOTOR = lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, 100) # Creates a PWM instance on the left motor enabling pin with the defined frequency and a duty cycle of 100 %
-PWM_RIGHT_MOTOR = lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, 100) # Creates a PWM instance on the right motor enabling pin with the defined frequency and a duty cycle of 100 %
+PWM_LEFT_MOTOR = lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, 0) # Creates a PWM instance on the left motor enabling pin with the defined frequency and a duty cycle of 0 %
+PWM_RIGHT_MOTOR = lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, 0) # Creates a PWM instance on the right motor enabling pin with the defined frequency and a duty cycle of 0 %
 
 # --- Motor controlling functions ---
 
@@ -128,7 +128,7 @@ def stop():
 
 # --- Movement functions ---
 
-def forward(speed = 100):
+def forward(direction = "centered", speed = 100, bias = 0.5):
 
     """
     Makes the robot go forward.
@@ -141,13 +141,22 @@ def forward(speed = 100):
     
     """
 
-    lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
-    lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
+    if direction == "right":
+        lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
+        lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed * bias)
+
+    elif direction == "left":
+        lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed * bias)
+        lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
+
+    else:
+        lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
+        lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
 
     left_motor_forward()
     right_motor_forward()
 
-def backwards(speed = 100):
+def backwards(direction = "centered", speed = 100, bias = 0.5):
 
     """
     Makes the robot go backwards.
@@ -160,8 +169,17 @@ def backwards(speed = 100):
     
     """
 
-    lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
-    lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
+    if direction == "right":
+        lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed * bias)
+        lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
+    
+    elif direction == "left":
+        lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
+        lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed * bias)
+
+    else:
+        lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
+        lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
 
     left_motor_backwards()
     right_motor_backwards()
