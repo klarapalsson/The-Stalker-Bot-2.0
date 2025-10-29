@@ -1,29 +1,51 @@
+
 # --- Imports ---
+
 from gpiozero import DistanceSensor
 import time
 
 # --- Definitions ---
+
 echo_pin = 24
 trigger_pin = 23
+
 max_distance_in_m = 2
 max_distance_in_cm = max_distance_in_m * 100
+
 distance_loop_update_time = 0.1
-timeout = 0.3  # seconds: how long to trust the last valid reading
-spike_threshold = 20  # cm, any sudden jump larger than this is ignored
+timeout = 0.3  # How long to trust the last valid reading
+
+spike_threshold = 20  # Any sudden jump larger than this is ignored
 
 # --- Sensor setup ---
-ultrasonic_sensor = DistanceSensor(echo=echo_pin, trigger=trigger_pin, max_distance=max_distance_in_m)
+
+ultrasonic_sensor = DistanceSensor(echo = echo_pin, trigger = trigger_pin, max_distance = max_distance_in_m)
+
 print("\nUltrasonic sensor initialized.")
 
 # --- Internal state ---
+
 _last_valid = max_distance_in_cm
 _last_time = time.time()
 
-# --- Functions ---
+# --- Main function ---
+
 def get_distance():
+
+    """
+    Gets the distance from the ultrasonic sensor.
+
+    Arguments:
+        None
+    
+    Returns:
+        float: The filtered distance in cm.
+
+    """
+
     global _last_valid, _last_time
 
-    raw = ultrasonic_sensor.distance * 100  # convert m -> cm
+    raw = ultrasonic_sensor.distance * 100
     now = time.time()
 
     # Accept if difference is reasonable
@@ -36,17 +58,22 @@ def get_distance():
     if now - _last_time <= timeout:
         return round(_last_valid, 1)
 
-    # Spike persists too long, accept new reading
+    # If spike persists too long, accept new reading
     _last_valid = raw
     _last_time = now
     return round(_last_valid, 1)
 
-# --- Demo ---
+# --- Test ---
+
 if __name__ == "__main__":
+
     try:
+        print("\nStarting ultrasonic sensor test.\n")
+
         while True:
-            dist = get_distance()
-            print(f"Filtered distance: {dist:.1f} cm", end="\r")
+            distance = get_distance()
+            print(f"Filtered distance: {distance:.1f} cm", end = "\r")
             time.sleep(distance_loop_update_time)
+
     except KeyboardInterrupt:
         print("\nStopped.")
