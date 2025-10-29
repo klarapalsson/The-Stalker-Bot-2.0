@@ -316,13 +316,11 @@ def get_tracking_data():
         direction = get_direction(x_center_normalized)
         bias = (abs(x_center_normalized-0.5))/0.5
         person_area_normalized = (width * height) / camera_frame_area
-        """
         if person_area_normalized > 0.5:
             speed_bias = (person_area_normalized - 0.5)/0.5
         elif person_area_normalized < 0.35
             speed_bias = (person_area_normalized - 0.35)/-0.35
         speed = 50 + 50 * speed_bias
-        """
 
     else: # Else (if there arent any person detections):
         print("No person detected.")
