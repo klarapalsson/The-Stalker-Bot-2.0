@@ -1,8 +1,7 @@
 
 # --- Imports ---
 
-import RPi.GPIO as GPIO
-import time
+import lgpio
 
 # --- Definitions ---
 
@@ -30,19 +29,16 @@ PWM_FREQUENCY = 1000 # Frequency for PWM instances (in Hz)
 
 # --- Setup ---
 
-GPIO.setmode(GPIO.BCM) # Sets pin numbering method to BCM
+CHIP_HANDLE = lgpio.gpiochip_open(0)
 
 for pin in ALL_PINS:
-    GPIO.setup(pin, GPIO.OUT) # Sets all pins to outputs
+    lgpio.gpio_claim_output(CHIP_HANDLE, pin, 0) # Sets all motor control pins as outputs and initializes them to LOW
 
 for pin in [LEFT_MOTOR_ENABLING_PIN, RIGHT_MOTOR_ENABLING_PIN]:
-    GPIO.output(pin, GPIO.HIGH) # Enables the motors by setting their enabling pins HIGH
+    lgpio.gpio_write(CHIP_HANDLE, pin, 1) # Enables the motors by setting their enabling pins HIGH
 
-PWM_LEFT_MOTOR = GPIO.PWM(LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY) # Creates a PWM instance on the left motor enabling pin with the defined frequency
-PWM_RIGHT_MOTOR = GPIO.PWM(RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY) # Creates a PWM instance on the right motor enabling pin with the defined frequency
-
-PWM_LEFT_MOTOR.start(100) # Starts the PWM instance on the left motor enabling pin at maximum duty cycle (100 %)
-PWM_RIGHT_MOTOR.start(100) # Starts the PWM instance on the right motor enabling pin at maximum duty cycle (100 %)
+PWM_LEFT_MOTOR = lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, 100) # Creates a PWM instance on the left motor enabling pin with the defined frequency and a duty cycle of 100 %
+PWM_RIGHT_MOTOR = lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, 100) # Creates a PWM instance on the right motor enabling pin with the defined frequency and a duty cycle of 100 %
 
 # --- Motor controlling functions ---
 
@@ -61,8 +57,8 @@ def left_motor_forward():
 
     """
 
-    GPIO.output(LEFT_MOTOR_INPUT_PIN_1, GPIO.HIGH)
-    GPIO.output(LEFT_MOTOR_INPUT_PIN_2, GPIO.LOW)
+    lgpio.gpio_write(CHIP_HANDLE, LEFT_MOTOR_INPUT_PIN_1, 1)
+    lgpio.gpio_write(CHIP_HANDLE, LEFT_MOTOR_INPUT_PIN_2, 0)
 
 def left_motor_backwards():
 
@@ -77,8 +73,8 @@ def left_motor_backwards():
     
     """
 
-    GPIO.output(LEFT_MOTOR_INPUT_PIN_1, GPIO.LOW)
-    GPIO.output(LEFT_MOTOR_INPUT_PIN_2, GPIO.HIGH)
+    lgpio.gpio_write(CHIP_HANDLE, LEFT_MOTOR_INPUT_PIN_1, 0)
+    lgpio.gpio_write(CHIP_HANDLE, LEFT_MOTOR_INPUT_PIN_2, 1)
 
 # Right motor (inverted)
 
@@ -95,8 +91,8 @@ def right_motor_forward():
 
     """
 
-    GPIO.output(RIGHT_MOTOR_INPUT_PIN_3, GPIO.LOW)
-    GPIO.output(RIGHT_MOTOR_INPUT_PIN_4, GPIO.HIGH)
+    lgpio.gpio_write(CHIP_HANDLE, RIGHT_MOTOR_INPUT_PIN_3, 0)
+    lgpio.gpio_write(CHIP_HANDLE, RIGHT_MOTOR_INPUT_PIN_4, 1)
 
 def right_motor_backwards():
 
@@ -111,8 +107,8 @@ def right_motor_backwards():
     
     """
 
-    GPIO.output(RIGHT_MOTOR_INPUT_PIN_3, GPIO.HIGH)
-    GPIO.output(RIGHT_MOTOR_INPUT_PIN_4, GPIO.LOW)
+    lgpio.gpio_write(CHIP_HANDLE, RIGHT_MOTOR_INPUT_PIN_3, 1)
+    lgpio.gpio_write(CHIP_HANDLE, RIGHT_MOTOR_INPUT_PIN_4, 0)
 
 def stop():
 
@@ -128,11 +124,11 @@ def stop():
     """
 
     for pin in MOTOR_INPUT_PINS:
-        GPIO.output(pin, GPIO.LOW)
+        lgpio.gpio_write(CHIP_HANDLE, pin, 0)
 
 # --- Movement functions ---
 
-def forward(duration = 2, speed = 100):
+def forward(speed = 100):
 
     """
     Makes the robot go forward.
@@ -145,17 +141,13 @@ def forward(duration = 2, speed = 100):
     
     """
 
-    PWM_LEFT_MOTOR.ChangeDutyCycle(speed)
-    PWM_RIGHT_MOTOR.ChangeDutyCycle(speed)
+    lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
+    lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
 
     left_motor_forward()
     right_motor_forward()
 
-    time.sleep(duration)
-
-    stop()
-
-def backwards(duration = 2, speed = 100):
+def backwards(speed = 100):
 
     """
     Makes the robot go backwards.
@@ -168,17 +160,13 @@ def backwards(duration = 2, speed = 100):
     
     """
 
-    PWM_LEFT_MOTOR.ChangeDutyCycle(speed)
-    PWM_RIGHT_MOTOR.ChangeDutyCycle(speed)
+    lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
+    lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
 
     left_motor_backwards()
     right_motor_backwards()
 
-    time.sleep(duration)
-
-    stop()
-
-def tank_turn_counterclockwise(duration = 2, speed = 100):
+def tank_turn_counterclockwise(speed = 100):
 
     """
     Makes the robot tank turn counterclockwise.
@@ -191,17 +179,13 @@ def tank_turn_counterclockwise(duration = 2, speed = 100):
     
     """
 
-    PWM_LEFT_MOTOR.ChangeDutyCycle(speed)
-    PWM_RIGHT_MOTOR.ChangeDutyCycle(speed)
+    lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
+    lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
 
     left_motor_backwards()
     right_motor_forward()
 
-    time.sleep(duration)
-
-    stop()
-
-def tank_turn_clockwise(duration = 2, speed = 100):
+def tank_turn_clockwise(speed = 100):
 
     """
     Makes the robot tank turn clockwise.
@@ -214,15 +198,11 @@ def tank_turn_clockwise(duration = 2, speed = 100):
     
     """
 
-    PWM_LEFT_MOTOR.ChangeDutyCycle(speed)
-    PWM_RIGHT_MOTOR.ChangeDutyCycle(speed)
+    lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
+    lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
 
     left_motor_forward()
     right_motor_backwards()
-
-    time.sleep(duration)
-
-    stop()
 
 def disable_motors():
 
@@ -238,4 +218,23 @@ def disable_motors():
     """
 
     for pin in [LEFT_MOTOR_ENABLING_PIN, RIGHT_MOTOR_ENABLING_PIN]:
-        GPIO.output(pin, GPIO.LOW)
+        lgpio.gpio_write(CHIP_HANDLE, pin, 0)
+
+# --- Cleanup function ---
+
+def cleanup():
+
+    """
+    Cleans up by stopping the PWM instances and closing the GPIO chip handle.
+
+    Arguments:
+        None
+
+    Returns:
+        None
+
+    """
+
+    lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, 0)
+    lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, 0)
+    lgpio.gpiochip_close(CHIP_HANDLE)
