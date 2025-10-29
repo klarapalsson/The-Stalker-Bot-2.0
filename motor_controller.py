@@ -132,7 +132,7 @@ def stop():
 
 # --- Movement functions ---
 
-def forward(direction ="centered", duration = 2, speed = 100):
+def forward(direction ="centered", duration = 2, speed = 100, bias = 0.5):
 
     """
     Makes the robot go forward.
@@ -144,11 +144,15 @@ def forward(direction ="centered", duration = 2, speed = 100):
         None
     
     """
-    if direction = "right":
+    if direction == "right":
+        PWM_LEFT_MOTOR.ChangeDutyCycle(speed)
+        PWM_RIGHT_MOTOR.ChangeDutyCycle(speed * bias)
+        
+    elif direction == "left":
+        PWM_LEFT_MOTOR.ChangeDutyCycle(speed * bias)
+        PWM_RIGHT_MOTOR.ChangeDutyCycle(speed)
 
-    if direction = "left":
-
-    if direction ="centered":
+    else:
         PWM_LEFT_MOTOR.ChangeDutyCycle(speed)
         PWM_RIGHT_MOTOR.ChangeDutyCycle(speed)
 
@@ -159,7 +163,7 @@ def forward(direction ="centered", duration = 2, speed = 100):
 
     stop()
 
-def backwards(direction="centered", duration = 2, speed = 100):
+def backwards(direction="centered", duration = 2, speed = 100, bias = 0.5):
 
     """
     Makes the robot go backwards.
@@ -171,9 +175,17 @@ def backwards(direction="centered", duration = 2, speed = 100):
         None
     
     """
+    if direction == "right":
+        PWM_LEFT_MOTOR.ChangeDutyCycle(speed * bias)
+        PWM_RIGHT_MOTOR.ChangeDutyCycle(speed)
+        
+    elif direction == "left":
+        PWM_LEFT_MOTOR.ChangeDutyCycle(speed)
+        PWM_RIGHT_MOTOR.ChangeDutyCycle(speed * bias)
 
-    PWM_LEFT_MOTOR.ChangeDutyCycle(speed)
-    PWM_RIGHT_MOTOR.ChangeDutyCycle(speed)
+    else:
+        PWM_LEFT_MOTOR.ChangeDutyCycle(speed)
+        PWM_RIGHT_MOTOR.ChangeDutyCycle(speed)
 
     left_motor_backwards()
     right_motor_backwards()
