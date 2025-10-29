@@ -6,8 +6,8 @@ import time
 
 # --- Definitions ---
 
-echo_pin = 24
-trigger_pin = 23
+echo_pin = 7
+trigger_pin = 8
 
 max_distance_in_m = 2
 max_distance_in_cm = max_distance_in_m * 100
