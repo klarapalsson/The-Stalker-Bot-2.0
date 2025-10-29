@@ -318,7 +318,7 @@ def get_tracking_data():
         person_area_normalized = (width * height) / camera_frame_area
         if person_area_normalized > 0.5:
             speed_bias = (person_area_normalized - 0.5)/0.5
-        elif person_area_normalized < 0.35
+        elif person_area_normalized < 0.35:
             speed_bias = (person_area_normalized - 0.35)/-0.35
         speed = 50 + 50 * speed_bias
 
