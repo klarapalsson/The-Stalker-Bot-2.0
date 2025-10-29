@@ -33,7 +33,19 @@ PWM_FREQUENCY = 1000 # Frequency for PWM instances (in Hz)
 CHIP_HANDLE = lgpio.gpiochip_open(0)
 
 for pin in ALL_PINS:
-    lgpio.gpio_claim_output(CHIP_HANDLE, pin, 0) # Sets all motor control pins as outputs and initializes them to LOW
+    
+    try:
+        lgpio.gpio_claim_output(CHIP_HANDLE, pin, 0)
+        
+    except lgpio.error as e:
+        
+        if str(e) == "GPIO busy":
+            print(f"Pin {pin} busy — trying to free it.")
+            lgpio.gpio_clear(CHIP_HANDLE, pin)
+            lgpio.gpio_claim_output(CHIP_HANDLE, pin, 0)
+            
+        else:
+            raise
 
 for pin in [LEFT_MOTOR_ENABLING_PIN, RIGHT_MOTOR_ENABLING_PIN]:
     lgpio.gpio_write(CHIP_HANDLE, pin, 1) # Enables the motors by setting their enabling pins HIGH
