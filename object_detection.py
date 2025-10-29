@@ -7,7 +7,6 @@ import argparse # Imports the argparse module, which provides a way to parse com
 from functools import lru_cache # Imports the lru_cache decorator from the functools module, which is used to cache the results of function calls
 import cv2 # Imports the OpenCV library for image and video processing
 import numpy # Imports the NumPy library for numerical operations on arrays
-from gpiozero import Servo # Imports the Servo class from the gpiozero module for controlling servo motors
 
 import libcamera # Imports the libcamera module, which provides access to the camera framework
 from picamera2 import MappedArray, Picamera2 # Imports MappedArray and Picamera2 classes for handling camera data and control with the Picamera2 API
@@ -314,7 +313,7 @@ def get_tracking_data():
         x, _, width, height = person.box # Extract its bounding box data
         x_center = x + width / 2 # Find the horizontal center of the detected person (in pixels)
         x_center_normalized = x_center / camera_frame_width # Converts pixel position into normalized value between 0 and 1
-        direction = get_direction(x_center_normalized) # Updates the servo position by calling "update_servo_tracking" with the normalized x-position
+        direction = get_direction(x_center_normalized)
         bias = (abs(x_center_normalized-0.5))/0.5
         person_area_normalized = (width * height) / camera_frame_area
         """
@@ -383,7 +382,7 @@ if video_recording:
 
 if __name__ == "__main__":
 
-    print("Starting camera-servo tracking test...")
+    print("Starting camera test...")
 
     try:
         while True:
