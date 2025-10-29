@@ -41,8 +41,8 @@ for pin in [LEFT_MOTOR_ENABLING_PIN, RIGHT_MOTOR_ENABLING_PIN]:
 PWM_LEFT_MOTOR = GPIO.PWM(LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY) # Creates a PWM instance on the left motor enabling pin with the defined frequency
 PWM_RIGHT_MOTOR = GPIO.PWM(RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY) # Creates a PWM instance on the right motor enabling pin with the defined frequency
 
-PWM_LEFT_MOTOR.start(100) # Starts the PWM instance on the left motor enabling pin at maximum duty cycle (100 %)
-PWM_RIGHT_MOTOR.start(100) # Starts the PWM instance on the right motor enabling pin at maximum duty cycle (100 %)
+PWM_LEFT_MOTOR.start(0) # Starts the PWM instance on the left motor enabling pin at minimum duty cycle (0 %)
+PWM_RIGHT_MOTOR.start(0) # Starts the PWM instance on the right motor enabling pin at minimum duty cycle (0 %)
 
 # --- Motor controlling functions ---
 
@@ -132,7 +132,7 @@ def stop():
 
 # --- Movement functions ---
 
-def forward(direction ="centered", duration = 2, speed = 100, bias = 0.5):
+def forward(direction ="centered", speed = 80, bias = 0.5):
 
     """
     Makes the robot go forward.
@@ -159,11 +159,7 @@ def forward(direction ="centered", duration = 2, speed = 100, bias = 0.5):
     left_motor_forward()
     right_motor_forward()
 
-    time.sleep(duration)
-
-    stop()
-
-def backwards(direction="centered", duration = 2, speed = 100, bias = 0.5):
+def backwards(direction="centered", speed = 80, bias = 0.5):
 
     """
     Makes the robot go backwards.
@@ -190,11 +186,7 @@ def backwards(direction="centered", duration = 2, speed = 100, bias = 0.5):
     left_motor_backwards()
     right_motor_backwards()
 
-    time.sleep(duration)
-
-    stop()
-
-def tank_turn_counterclockwise(duration = 2, speed = 100):
+def tank_turn_counterclockwise(speed = 80):
 
     """
     Makes the robot tank turn counterclockwise.
@@ -213,11 +205,7 @@ def tank_turn_counterclockwise(duration = 2, speed = 100):
     left_motor_backwards()
     right_motor_forward()
 
-    time.sleep(duration)
-
-    stop()
-
-def tank_turn_clockwise(duration = 2, speed = 100):
+def tank_turn_clockwise(speed = 80):
 
     """
     Makes the robot tank turn clockwise.
@@ -235,10 +223,6 @@ def tank_turn_clockwise(duration = 2, speed = 100):
 
     left_motor_forward()
     right_motor_backwards()
-
-    time.sleep(duration)
-
-    stop()
 
 def disable_motors():
 
