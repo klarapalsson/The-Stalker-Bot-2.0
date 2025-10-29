@@ -318,7 +318,7 @@ def get_tracking_data():
         x_center = x + width / 2 # Find the horizontal center of the detected person (in pixels)
         x_center_normalized = x_center / camera_frame_width # Converts pixel position into normalized value between 0 and 1
         direction = get_direction(x_center_normalized)
-        bias = (abs(x_center_normalized-0.5))/0.5
+        bias = 1-((abs(x_center_normalized-0.5))/0.5)
         person_area_normalized = (width * height) / camera_frame_area
         if person_area_normalized > 0.5:
             speed_bias = (person_area_normalized - 0.5)/0.5
