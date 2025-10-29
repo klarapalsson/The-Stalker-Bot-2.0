@@ -308,7 +308,7 @@ def get_tracking_data():
     person_area_normalized = None
     direction = "none"
     bias = None
-    speed_bias = None
+    speed_bias = 0
     speed = 0
     
 
