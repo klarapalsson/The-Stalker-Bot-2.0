@@ -96,11 +96,11 @@ def follow():
         if person_area < target_minimum_area:
             
             print_and_log("Person is too far away, trying to move forward...")
-            forward(direction, bias, speed)
+            forward(direction, speed, bias)
             
         elif person_area > target_maximum_area:
             print_and_log("Person is too close, moving backwards...")
-            backwards(direction, bias, speed)
+            backwards(direction, speed, bias)
         else:
             print_and_log("Distance is OK, stopping...")
         
