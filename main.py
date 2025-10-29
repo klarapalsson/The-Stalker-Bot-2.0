@@ -2,7 +2,7 @@
 # --- Imports ---
 
 import time
-import ai_detection
+import object_detection
 from ultrasonic_sensor import get_distance
 from motor_controller import forward, backwards, tank_turn_counterclockwise, tank_turn_clockwise, stop, disable_motors
 
@@ -42,7 +42,7 @@ def print_and_log(message):
     with open(log_file_path, "a") as f:
         f.write("\n" + message)
 
-    ai_detection.video_status_text = message # Update the video status text in the AI detection module
+    object_detection.video_status_text = message # Update the video status text in the AI detection module
 
 def avoid_obstacle():
 
@@ -76,7 +76,7 @@ def follow():
 
     while True:
 
-        direction, bias, obstacle, person_area = ai_detection.get_tracking_data() # Gets necessary data from the AI camera
+        direction, bias, obstacle, person_area = object_detection.get_tracking_data() # Gets necessary data from the AI camera
 
         distance_in_cm = get_distance() # Gets distance to closest obstacle from ultrasonic sensor    
 
