@@ -153,16 +153,17 @@ def forward(direction = "centered", speed = 100, bias = 0.5):
         None
     
     """
+    print(f"\n bias is: {bias}")
 
     if direction == "right":
-        lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed * 0.80)
+        lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
         lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed * bias)
     elif direction == "left":
         lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed * bias)
-        lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed * 0.80)
+        lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
     else:
-        lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed * 0.80)
-        lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed * 0.80)
+        lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
+        lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
 
     left_motor_forward()
     right_motor_forward()
@@ -179,6 +180,7 @@ def backwards(direction = "centered", speed = 100, bias = 0.5):
         None
     
     """
+    print(f"\n bias is: {bias}")
 
     if direction == "right":
         lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed * bias)
