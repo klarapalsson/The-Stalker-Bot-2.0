@@ -272,10 +272,10 @@ def get_direction(x_center_normalized):
     direction = None
 
     if x_center_normalized > 0.5 + camera_threshold:
-        direction = "left"
+        direction = "right"
 
     elif x_center_normalized < 0.5 - camera_threshold:
-        direction = "right"
+        direction = "left"
 
     else: # Else (if the person is roughly in the middle):
         direction = "centered" # Set direction to "centered"
