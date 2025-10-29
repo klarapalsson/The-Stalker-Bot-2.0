@@ -2,26 +2,9 @@
 
 import ai_detection
 import time
-from gpiozero import Servo # Imports the Servo class from the gpiozero module for controlling servo motors
 from main import stop, move_backwards, move_forward, turn, follow
 
-# --- Servo definitions ---
-
-servo_maximum_position = 1 # Looking right
-servo_minimum_position = -1 # Looking left
-servo_minimum_pulse_width = 0.5 / 1000
-servo_maximum_pulse_width = 2.5 / 1000
-servo_step = 0.04
-servo_threshold = 0.2
-servo_change_threshold = 0.005
-servo_smooth_speed = 0.005
-servo_step_delay = 0.005
-
-# --- Servo setup ---
-
-servo = Servo(18, min_pulse_width = servo_minimum_pulse_width, max_pulse_width = servo_maximum_pulse_width) # Creates a servo object on GPIO pin 18 with specified pulse widths
-servo_position = 0.0 # Creates a variable for the servo position and initializes its value to 0.0 (center position)
-servo.value = servo_position # Sets the position to "servo_position"
+# --- Main function ---
 
 def avoid_obstacle():
 
@@ -270,7 +253,6 @@ def check_left():
      
      """
 
-     servo.value = servo_minimum_position
 
 def check_right():
 
@@ -279,7 +261,5 @@ def check_right():
      Turning the servo right
      
      """
-
-     servo.value = servo_maximum_position
 
     
