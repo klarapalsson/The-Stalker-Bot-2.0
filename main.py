@@ -76,7 +76,7 @@ def follow():
 
     while True:
 
-        direction, obstacle, person_area = ai_detection.get_tracking_data() # Gets necessary data from the AI camera
+        direction, bias, obstacle, person_area = ai_detection.get_tracking_data() # Gets necessary data from the AI camera
 
         distance_in_cm = get_distance() # Gets distance to closest obstacle from ultrasonic sensor    
 
@@ -96,11 +96,11 @@ def follow():
         if person_area < target_minimum_area:
             
             print_and_log("Person is too far away, trying to move forward...")
-            forward(direction)
+            forward(direction, bias)
             
         elif person_area > target_maximum_area:
             print_and_log("Person is too close, moving backwards...")
-            backwards(direction)
+            backwards(direction, bias)
         else:
             print_and_log("Distance is OK, stopping...")
         
