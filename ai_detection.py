@@ -4,7 +4,6 @@
 import time
 import datetime # Imports the datetime module for working with dates and times
 import argparse # Imports the argparse module, which provides a way to parse command-line arguments
-import sys # Imports the sys module, which provides access to system-specific parameters and functions
 from functools import lru_cache # Imports the lru_cache decorator from the functools module, which is used to cache the results of function calls
 import cv2 # Imports the OpenCV library for image and video processing
 import numpy # Imports the NumPy library for numerical operations on arrays
