@@ -1,6 +1,6 @@
 # --- Imports ---
 
-import ai_detection
+import object_detection
 import time
 from main import stop, move_backwards, move_forward, turn, follow
 
@@ -24,7 +24,7 @@ def avoid_obstacle():
      obstacle_note_front = False
      obstacle_note_side = False
      timer = 0
-     angle, direction, obstacle, person_area = ai_detection.get_tracking_data() # Gets necessary data from the AI camera
+     angle, direction, obstacle, person_area = object_detection.get_tracking_data() # Gets necessary data from the AI camera
 
 
      print("\nStopping...")
