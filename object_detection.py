@@ -308,7 +308,9 @@ def get_tracking_data():
     person_area_normalized = None
     direction = "none"
     bias = None
+    speed_bias = None
     speed = 0
+    
 
     if person_detections: # If there are any person detections:
         person = person_detections[0] # Select the first one
