@@ -324,7 +324,7 @@ def get_tracking_data():
             speed_bias = (person_area_normalized - 0.5)/0.5
         elif person_area_normalized < 0.35:
             speed_bias = (person_area_normalized - 0.35)/-0.35
-        speed = 50 + 50 * speed_bias
+        speed = 35 + 35 * speed_bias
 
     else: # Else (if there arent any person detections):
         print("No person detected.")
