@@ -2,264 +2,116 @@
 
 import object_detection
 import time
-from main import stop, move_backwards, move_forward, turn, follow
+from motor_controller import forward, backwards, tank_turn_counterclockwise, tank_turn_clockwise, stop
 
 # --- Main function ---
 
 def avoid_obstacle():
+    """
+    Avoids an obstacle by stopping, turning the robot slightly left/right,
+    checking with the camera, and going around.
 
-     """
-     Avoids an obstacle by stopping.
+    Arguments: None
 
-     Arguments:
-          None
+    Returns: None
 
-     Returns:
-         None
+    """
+
+    print("Stopping...")
+    stop()
+    time.sleep(0.3)
+
+    # --- Check left ---
+    print("Checking left...")
+    check_left()
+    obstacle_left = object_detection.get_tracking_data()[2]
     
-     """
+    # --- Check right ---
+    print("Checking right...")
+    check_right()
+    obstacle_right = object_detection.get_tracking_data()[2]
 
-     # --- Temporary variables ---
-
-     obstacle_note_front = False
-     obstacle_note_side = False
-     timer = 0
-     angle, direction, obstacle, person_area = object_detection.get_tracking_data() # Gets necessary data from the AI camera
-
-
-     print("\nStopping...")
-     stop() # stop
-
-     if person_area is not None: # if person
-          if direction == "centered": # if centered
-              
-               print("\nChecking left...")
-               check_left() # check left
-
-               if not obstacle: # if not obstacle 
-                    print("\nObstacle not detected, going around...")
-                    go_around_left() # go_around_left()
-
-                    print("\nNow following...")
-                    return
-
-               else: # else obstacle   
-                    print("\nNo person detected, checking right...")
-                    check_right() # check right 
-
-                    if not obstacle: # if not obstacle
-                         print("\nNo obstacle detected, going around...")
-                         go_around_right() # go around right 
-
-                         print("\nNow following...")
-                         return
+    # --- Decide what to do ---
+    if not obstacle_left:
+        print("Path clear on left, turning left...")
+        go_around_left()
+    elif not obstacle_right:
+        print("Path clear on right, turning right...")
+        go_around_right()
+    else:
+        print("Obstacles both sides, moving backwards...")
+        backwards()
+        time.sleep(1)
+        stop()
 
 
+# --- Helper functions ---
 
-     if person_area is None: # if no person
+def check_left():
+    """
+    Turns slightly left to check that direction, then returns to original orientation.
 
-          if direction == "centered":
-               print("\nNotes if there is an obstacle or not")
-               obstacle_note_front = obstacle
+    Arguments: None
 
-               # --- Checking Left ---
+    Returns: None
+    
+    """
+    tank_turn_counterclockwise()
+    time.sleep(0.4)  # adjust rotation
+    stop()
+    time.sleep(0.2)
+    tank_turn_clockwise()  # turn back
+    time.sleep(0.4)
+    stop()
+    time.sleep(0.2)
 
-               print("\nNo person detected, checking left...")
-               check_left() # check left
+def check_right():
+    """
+    Turns slightly right to check that direction, then returns to original orientation.
+    
+    Arguments: None
 
-               if person_area is not None: # checks if theres a person the left
-
-                    print("\nNoting if there's an obstacle to the right")
-                    check_right() # checking right
-
-                    obstacle_note_side = obstacle
-
-                    check_left()
-
-                    if not obstacle: # if no obstacle to the left
-                         print("\nPerson found, following...")
-                         return
-                    
-                    elif obstacle: # elif person and obstacle to the left
-
-                         """
-                         
-                         Turning to the left so that the person is straight ahead.
-
-                         Now facing the past left.
-
-                         """
-
-                         print("\nTurning left so that the person is straight ahead...")
-                         turning_left() # turning left
-
-                         if obstacle_note_front: # if there's an obstacle to the right
-                              print("\nObstacle on the right, checking left...")
-                              check_left() # check left for obstacle again
-
-                              if not obstacle: # if no obstacle
-                                   print("\nPerson and obstacle detected, going around...")
-                                   go_around_left() # go around left
-
-                                   print("\nNow following...")
-                                   return
-
-                              elif obstacle_note_side: # elif surrounded by obstacles
-                                   print("\nSurrounded by obstacles, stopping...")
-                                   stop() # stopping
-
-                                   return
-                              
-                              else: # else no obstacle behind
-
-                                   print("\nNo obstacle behind, backing out...")
-                                   move_backwards() # backing out
-
-                         else: # else there is no obstacle to the right
-                              print("\nNo obstacle to the right, going around...")
-                              go_around_right() # going around right
-
-                              print("\nNow following...")
-                              return
-
-               # Checking Left
-
-               # --- Checking Right ---
-
-               else: # else no person to the left
-                    print("\nNo person to the left, checking right...")
-                    check_right() # check right
-               
-                    if person_area is not None: # person to the right 
-
-                         print("\nNoting if there's an obstacle to the left...")
-                         check_left() # check left
-
-                         obstacle_note_side = obstacle
-
-                         check_right()
-
-                         if not obstacle: # if no obstacle
-                              print("\nPerson found, following...")
-                              return
-
-                         elif obstacle: # elif obstacle
-
-                              """
-                         
-                              Turning right so that the person is straight ahead.
-
-                              Now facing the past right.
-
-                              """
-
-                              print("\nTurning right so that the person is straight ahead...")
-                              turning_right() # turning right
-
-                              if obstacle_note_front: # if there's an obstacle to the left
-                                   print("\nObstacle to the left, checking right again...")
-                                   check_right() # checking right again
-
-                                   if not obstacle: # if no obstacle on right side
-                                        print("\nNo obstacle to the right, going around...")
-                                        go_around_right # going around right
-                                        
-                                        print("\nNow following...")
-                                        return
-                                   
-                                   elif obstacle_note_side: # elif surrounded by obstacles
-                                        print("\nSurrounded by obstacles, stopping...")
-                                        stop() #stopping
-
-                                        return
-                                   
-                                   else: # else no obstacle behind
-
-                                        print("\nNo obstacle behind, backing out...")
-                                        move_backwards() # backing out
-
-                              else: # else no obstacle on left side
-                                   print("\nNo obstacle to the left, going around...")
-                                   go_around_left() # going around left
-
-                                   print("\nNow following...")
-                                   return
-                              
-               # Checking Right
-               
-               # --- No Person Found ---
-
-                    else: # else no person detected
-                         print("\nNo persen detected, stopping...")
-                         stop() # stopping
-
-
-            
+    Returns: None
+    
+    """
+    tank_turn_clockwise()
+    time.sleep(0.4)
+    stop()
+    time.sleep(0.2)
+    tank_turn_counterclockwise()  # turn back
+    time.sleep(0.4)
+    stop()
+    time.sleep(0.2)
 
 
 def go_around_left():
+    """
+    Turns left and moves forward around the obstacle.
+    
+    Arguments: None
 
-     """
-
-     turn left until obstacle is not detected
-
-     possibly holding the obstacle to 45 or 90 degrees of the car
-
-     """
-
-     move_forward()
-     turn("left", 180) 
-     turn("right",0) 
+    Returns: None
+    
+    """
+    tank_turn_counterclockwise()
+    time.sleep(0.6)
+    stop()
+    forward()
+    time.sleep(1.2)
+    stop()
 
 def go_around_right():
-
-     """
-
-     turn right until obstacle is not detected
-
-     possibly holding the obstacle to 45 or 90 degrees of the car
-
-     """
-
-     move_forward()
-     turn("right",0) 
-     turn("left", 180) 
-
-def turning_left():
-
-     """
-     
-     turning 90 degrees to the left
-     
-     """
-
-     #whoop whoop
-
-def turning_right():
-
-     """
-     
-     turning 90 degrees to the right
-     
-     """
-
-     #walla bapbap
+    """
+    Turns right and moves forward around the obstacle.
     
-def check_left():
+    Arguments: None
 
-     """
-     
-     Turning the servo left
-     
-     """
+    Returns: None
 
-
-def check_right():
-
-     """
-     
-     Turning the servo right
-     
-     """
-
-    
+    """
+    tank_turn_clockwise()
+    time.sleep(0.6)
+    stop()
+    forward()
+    time.sleep(1.2)
+    stop()
