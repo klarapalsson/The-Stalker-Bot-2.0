@@ -24,12 +24,12 @@ def avoid_obstacle():
     # --- Check left ---
     print("Checking left...")
     check_left()
-    obstacle_left = object_detection.get_tracking_data()[2]
+    obstacle_left = object_detection.get_tracking_data()[3]
     
     # --- Check right ---
     print("Checking right...")
     check_right()
-    obstacle_right = object_detection.get_tracking_data()[2]
+    obstacle_right = object_detection.get_tracking_data()[3]
 
     # --- Decide what to do ---
     if not obstacle_left:
