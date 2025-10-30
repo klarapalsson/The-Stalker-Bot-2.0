@@ -7,13 +7,16 @@ from motor_controller import forward, backwards, tank_turn_counterclockwise, tan
 # --- Main function ---
 
 def avoid_obstacle():
+
     """
     Avoids an obstacle by stopping, turning the robot slightly left/right,
     checking with the camera, and going around.
 
-    Arguments: None
+    Arguments:
+        None
 
-    Returns: None
+    Returns:
+        None
 
     """
 
@@ -35,19 +38,21 @@ def avoid_obstacle():
     if not obstacle_left:
         print("Path clear on left, turning left...")
         go_around_left()
+
     elif not obstacle_right:
         print("Path clear on right, turning right...")
         go_around_right()
+
     else:
         print("Obstacles both sides, moving backwards...")
         backwards()
         time.sleep(1)
-        stop()
-
+        avoid_obstacle()
 
 # --- Helper functions ---
 
 def check_left():
+
     """
     Turns slightly left to check that direction, then returns to original orientation.
 
@@ -56,6 +61,7 @@ def check_left():
     Returns: None
     
     """
+
     tank_turn_counterclockwise()
     time.sleep(0.4)  # adjust rotation
     stop()
@@ -66,6 +72,7 @@ def check_left():
     time.sleep(0.2)
 
 def check_right():
+
     """
     Turns slightly right to check that direction, then returns to original orientation.
     
@@ -74,6 +81,7 @@ def check_right():
     Returns: None
     
     """
+
     tank_turn_clockwise()
     time.sleep(0.4)
     stop()
@@ -85,6 +93,7 @@ def check_right():
 
 
 def go_around_left():
+
     """
     Turns left and moves forward around the obstacle.
     
@@ -93,6 +102,7 @@ def go_around_left():
     Returns: None
     
     """
+
     tank_turn_counterclockwise()
     time.sleep(0.6)
     stop()
@@ -101,6 +111,7 @@ def go_around_left():
     stop()
 
 def go_around_right():
+
     """
     Turns right and moves forward around the obstacle.
     
@@ -109,6 +120,7 @@ def go_around_right():
     Returns: None
 
     """
+    
     tank_turn_clockwise()
     time.sleep(0.6)
     stop()
