@@ -16,7 +16,7 @@ def check_left():
         None
 
     Returns:
-        None
+        bool: True if there is an obstacle on the left, False if path is clear.
     
     """
 
@@ -40,7 +40,7 @@ def check_right():
         None
 
     Returns:
-        None
+        bool: True if there is an obstacle on the right, False if path is clear.
     
     """
 
