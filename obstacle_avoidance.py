@@ -24,10 +24,12 @@ def check_left():
     time.sleep(0.4)  # adjust rotation
     stop()
     time.sleep(0.2)
+    obstacle_left = object_detection.get_tracking_data()[3]
     tank_turn_clockwise()  # turn back
     time.sleep(0.4)
     stop()
     time.sleep(0.2)
+    return obstacle_left
 
 def check_right():
 
@@ -46,10 +48,12 @@ def check_right():
     time.sleep(0.4)
     stop()
     time.sleep(0.2)
+    obstacle_right = object_detection.get_tracking_data()[3]
     tank_turn_counterclockwise()  # turn back
     time.sleep(0.4)
     stop()
     time.sleep(0.2)
+    return obstacle_right
 
 
 def go_around_left():
@@ -114,13 +118,11 @@ def avoid_obstacle():
 
     # --- Check left ---
     print("Checking left...")
-    check_left()
-    obstacle_left = object_detection.get_tracking_data()[3]
+    obstacle_left = check_left()
     
     # --- Check right ---
     print("Checking right...")
-    check_right()
-    obstacle_right = object_detection.get_tracking_data()[3]
+    obstacle_right = check_right()
 
     # --- Decide what to do ---
     if not obstacle_left:
