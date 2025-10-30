@@ -105,10 +105,10 @@ def follow():
             print_and_log("Distance is OK, stopping...")
         
             if direction == "right":
-                tank_turn_clockwise(bias)
+                tank_turn_clockwise()
 
             elif direction == "left":
-                tank_turn_counterclockwise(bias)
+                tank_turn_counterclockwise()
 
             else:
                 stop()
