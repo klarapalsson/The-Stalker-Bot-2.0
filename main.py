@@ -3,6 +3,7 @@
 
 import time
 import object_detection
+import obstacle_avoidance
 from ultrasonic_sensor import get_distance
 from motor_controller import forward, backwards, tank_turn_counterclockwise, tank_turn_clockwise, stop, disable_motors
 
@@ -44,21 +45,6 @@ def print_and_log(message):
 
     object_detection.video_status_text = message # Update the video status text in the AI detection module
 
-def avoid_obstacle():
-
-    """
-    Avoids an obstacle by stopping.
-
-    Arguments:
-        None
-
-    Returns:
-        None
-    
-    """
-
-    print_and_log("Stopping...")
-    stop()
 
 # --- Main program loop ---
 
@@ -82,7 +68,7 @@ def follow():
 
         if obstacle: #or distance_in_cm <= safe_distance_in_cm: # If either the AI camera or the ultrasonic sensor detects an obstacle:
             print_and_log("Trying to avoid an obstacle...")
-            avoid_obstacle()
+            obstacle_avoidance.avoid_obstacle()
             continue
             
         if person_area is None:
