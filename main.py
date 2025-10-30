@@ -78,11 +78,10 @@ def follow():
 
         direction, bias, speed, obstacle, person_area = object_detection.get_tracking_data() # Gets necessary data from the AI camera
 
-        #distance_in_cm = get_distance() # Gets distance to closest obstacle from ultrasonic sensor    
+        #distance_in_cm = get_distance() # Gets distance to closest obstacle/wall from ultrasonic sensor    
 
         if obstacle: #or distance_in_cm <= safe_distance_in_cm: # If either the AI camera or the ultrasonic sensor detects an obstacle:
             print_and_log("Trying to avoid an obstacle...")
-            forward()
             avoid_obstacle()
             continue
             
