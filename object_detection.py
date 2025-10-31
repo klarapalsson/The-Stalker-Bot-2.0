@@ -340,7 +340,7 @@ def get_tracking_data():
             x, _, width, height = obstacle.box
 
             x_center_obstacle = x + width / 2
-            x_center_obstacle_normalized = x_center_obstacle / camera_frame width 
+            x_center_obstacle_normalized = x_center_obstacle / camera_frame_width 
             obstacle_bottom_normalized = (y + height) / camera_frame_height
 
             if ((width / camera_frame_width) > obstacle_width_threshold and abs(x_center_normalized - 0.5) < (obstacle_center_x_threshold/2) and obstacle_bottom_normalized > obstacle_bottom_threshold):
