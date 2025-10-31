@@ -337,7 +337,7 @@ def get_tracking_data():
     for obstacle in last_results:
 
         if intrinsics.labels[int(obstacle.category)] in obstacle_labels:
-            x, _, width, height = obstacle.box
+            x, y, width, height = obstacle.box
 
             x_center_obstacle = x + width / 2
             x_center_obstacle_normalized = x_center_obstacle / camera_frame_width 
