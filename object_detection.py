@@ -339,6 +339,8 @@ def get_tracking_data():
 
             #x_center_obstacle = x + width / 2
             #x_center_obstacle_normalized = x_center_obstacle / camera_frame width 
+            obstacle_bottom = y + height
+            obstacle_bottom_normalized = obstacle_bottom / camera_frame_height
 
             if width / camera_frame_width  > obstacle_width_threshold: #and 0.25 < x_center_obstacle_normalized < 0.75 # If the obstacle box width is larger than the threshold
                 label = intrinsics.labels[int(obstacle.category)]
