@@ -343,7 +343,7 @@ def get_tracking_data():
             x_center_obstacle_normalized = x_center_obstacle / camera_frame_width 
             obstacle_bottom_normalized = (y + height) / camera_frame_height
 
-            if ((width / camera_frame_width) > obstacle_width_threshold and abs(x_center_normalized - 0.5) < (obstacle_center_x_threshold/2) and obstacle_bottom_normalized > obstacle_bottom_threshold):
+            if ((width / camera_frame_width) > obstacle_width_threshold and abs(x_center_obstacle_normalized - 0.5) < (obstacle_center_x_threshold/2) and obstacle_bottom_normalized > obstacle_bottom_threshold):
                 # If the obstacle box width is larger than the threshold, the obstacle is in the driving path and close enough
                 label = intrinsics.labels[int(obstacle.category)]
                 print(f"Obstacle detected: {label}")
