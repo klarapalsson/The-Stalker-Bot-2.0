@@ -82,7 +82,8 @@ def follow():
 
         if obstacle: #or distance_in_cm <= safe_distance_in_cm: # If either the AI camera or the ultrasonic sensor detects an obstacle:
             print_log_and_say("Trying to avoid an obstacle...")
-            obstacle_avoidance.avoid_obstacle()
+            #obstacle_avoidance.avoid_obstacle()
+            stop()
             continue
             
         if person_area is None:
