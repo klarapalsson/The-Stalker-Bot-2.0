@@ -24,14 +24,15 @@ log_file_path = "robot_log.txt"
 with open(log_file_path, "w") as f:
     f.write("Robot session started")
 
-# --- Initialize text-to-speech engine ---
-tts_engine = pyttsx3.init()
-tts_engine.setProperty('rate', 170)  # Adjust speaking speed
-tts_engine.setProperty('volume', 1.0)  # Max volume
+# --- Text-to-speech engine initialization ---
+
+text_to_speech_engine = pyttsx3.init()
+text_to_speech_engine.setProperty('rate', 170) # Adjust speaking speed
+text_to_speech_engine.setProperty('volume', 1.0) # Max volume
 
 # --- Helper functions ---
 
-def print_and_log_and_speak(message):
+def print_and_log_and_say(message):
 
     """
     Prints a message, writes it to a log file and says it aloud.
@@ -52,15 +53,16 @@ def print_and_log_and_speak(message):
     object_detection.video_status_text = message # Update the video status text in the AI detection module
 
     try:
-        tts_engine.say(message)
-        tts_engine.runAndWait()
+        text_to_speech_engine.say(message)
+        text_to_speech_engine.runAndWait()
+
     except Exception as e:
         print(f"Speech error: {e}")
-
 
 # --- Main program loop ---
 
 def follow():
+
     """
     Runs the person-following loop.
 
@@ -79,28 +81,28 @@ def follow():
         #distance_in_cm = get_distance() # Gets distance to closest obstacle/wall from ultrasonic sensor    
 
         if obstacle: #or distance_in_cm <= safe_distance_in_cm: # If either the AI camera or the ultrasonic sensor detects an obstacle:
-            print_and_log_and_speak("Trying to avoid an obstacle...")
+            print_and_log_and_say("Trying to avoid an obstacle...")
             #obstacle_avoidance.avoid_obstacle()
             stop()
             continue
             
         if person_area is None:
-            print_and_log_and_speak("No person detected, waiting...")
+            print_and_log_and_say("No person detected, waiting...")
             stop()
             continue
         
-        print_and_log_and_speak(f"Person takes up {person_area:.2f} of the total frame size")
+        print_and_log_and_say(f"Person takes up {person_area:.2f} of the total frame size")
 
         if person_area < target_minimum_area:
             
-            print_and_log_and_speak("Person is too far away, trying to move forward...")
+            print_and_log_and_say("Person is too far away, trying to move forward...")
             forward(direction, speed, bias)
             
         elif person_area > target_maximum_area:
-            print_and_log_and_speak("Person is too close, moving backwards...")
+            print_and_log_and_say("Person is too close, moving backwards...")
             backwards(direction, speed, bias)
         else:
-            print_and_log_and_speak("Distance is OK, stopping...")
+            print_and_log_and_say("Distance is OK, stopping...")
         
             if direction == "right":
                 tank_turn_clockwise()
