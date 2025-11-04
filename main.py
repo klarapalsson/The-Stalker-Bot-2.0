@@ -32,7 +32,7 @@ text_to_speech_engine.setProperty('volume', 1.0) # Max volume
 
 # --- Helper functions ---
 
-def print_and_log_and_say(message):
+def print_log_and_say(message):
 
     """
     Prints a message, writes it to a log file and says it aloud.
@@ -81,27 +81,27 @@ def follow():
         #distance_in_cm = get_distance() # Gets distance to closest obstacle/wall from ultrasonic sensor    
 
         if obstacle: #or distance_in_cm <= safe_distance_in_cm: # If either the AI camera or the ultrasonic sensor detects an obstacle:
-            print_and_log_and_say("Trying to avoid an obstacle...")
+            print_log_and_say("Trying to avoid an obstacle...")
             obstacle_avoidance.avoid_obstacle()
             continue
             
         if person_area is None:
-            print_and_log_and_say("No person detected, waiting...")
+            print_log_and_say("No person detected, waiting...")
             stop()
             continue
         
-        print_and_log_and_say(f"Person takes up {person_area:.2f} of the total frame size")
+        print_log_and_say(f"Person takes up {person_area:.2f} of the total frame size")
 
         if person_area < target_minimum_area:
             
-            print_and_log_and_say("Person is too far away, trying to move forward...")
+            print_log_and_say("Person is too far away, trying to move forward...")
             forward(direction, speed, bias)
             
         elif person_area > target_maximum_area:
-            print_and_log_and_say("Person is too close, moving backwards...")
+            print_log_and_say("Person is too close, moving backwards...")
             backwards(direction, speed, bias)
         else:
-            print_and_log_and_say("Distance is OK, stopping...")
+            print_log_and_say("Distance is OK, stopping...")
         
             if direction == "right":
                 tank_turn_clockwise()
