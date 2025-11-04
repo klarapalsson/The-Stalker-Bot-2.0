@@ -228,6 +228,8 @@ def tank_turn_counterclockwise(speed = 50, bias = 0.5):
 
     if speed * bias < 25:
         biased_speed = 25
+    else:
+        biased_speed = speed * bias
 
     lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, biased_speed)
     lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, biased_speed)
@@ -249,6 +251,8 @@ def tank_turn_clockwise(speed = 50, bias = 0.5):
     """
     if speed * bias < 25:
         biased_speed = 25
+    else:
+        biased_speed = speed * bias
 
     lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, biased_speed)
     lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, biased_speed)
