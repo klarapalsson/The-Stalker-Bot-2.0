@@ -36,7 +36,7 @@ bounding_box_thickness = 2
 
 # --- Video recording definitions ---
 
-video_recording = False # Flag to enable or disable video recording
+video_recording = True # Flag to enable or disable video recording
 video_recording_fps = 30 # Frames per second for video recording
 video_recording_size = (camera_frame_width, camera_frame_height) # Size of the video recording frame
 
