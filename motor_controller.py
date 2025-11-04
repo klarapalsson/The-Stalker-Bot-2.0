@@ -213,7 +213,7 @@ def backwards(direction = "centered", speed = 100, bias = 0.5):
     left_motor_backwards()
     right_motor_backwards()
 
-def tank_turn_counterclockwise(speed = 50):
+def tank_turn_counterclockwise(speed = 50, bias = 0.5):
 
     """
     Makes the robot tank turn counterclockwise.
@@ -226,13 +226,16 @@ def tank_turn_counterclockwise(speed = 50):
     
     """
 
-    lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
-    lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
+    if speed * bias < 25:
+        biased_speed = 25
+
+    lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, biased_speed)
+    lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, biased_speed)
 
     left_motor_backwards()
     right_motor_forward()
 
-def tank_turn_clockwise(speed = 50):
+def tank_turn_clockwise(speed = 50, bias = 0.5):
 
     """
     Makes the robot tank turn clockwise.
@@ -244,9 +247,11 @@ def tank_turn_clockwise(speed = 50):
         None
     
     """
+    if speed * bias < 25:
+        biased_speed = 25
 
-    lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
-    lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, speed)
+    lgpio.tx_pwm(CHIP_HANDLE, LEFT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, biased_speed)
+    lgpio.tx_pwm(CHIP_HANDLE, RIGHT_MOTOR_ENABLING_PIN, PWM_FREQUENCY, biased_speed)
 
     left_motor_forward()
     right_motor_backwards()
