@@ -213,7 +213,7 @@ def backwards(direction = "centered", speed = 100, bias = 0.5):
     left_motor_backwards()
     right_motor_backwards()
 
-def tank_turn_counterclockwise(speed = 50, bias = 0.5):
+def tank_turn_counterclockwise(speed = 100, bias = 0.5):
 
     """
     Makes the robot tank turn counterclockwise.
@@ -237,7 +237,7 @@ def tank_turn_counterclockwise(speed = 50, bias = 0.5):
     left_motor_backwards()
     right_motor_forward()
 
-def tank_turn_clockwise(speed = 50, bias = 0.5):
+def tank_turn_clockwise(speed = 100, bias = 0.5):
 
     """
     Makes the robot tank turn clockwise.
