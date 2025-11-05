@@ -2,10 +2,11 @@
 # --- Imports ---
 
 import time
+
+import speaker
 import object_detection
 import obstacle_avoidance
 from motor_controller import forward, backwards, tank_turn_counterclockwise, tank_turn_clockwise, stop, disable_motors
-#import pyttsx3
 
 # --- General definitions ---
 
@@ -21,12 +22,10 @@ log_file_path = "robot_log.txt"
 with open(log_file_path, "w") as f:
     f.write("Robot session started")
 
-# --- Text-to-speech engine initialization ---
-"""
-text_to_speech_engine = pyttsx3.init()
-text_to_speech_engine.setProperty('rate', 170) # Adjust speaking speed
-text_to_speech_engine.setProperty('volume', 1.0) # Max volume
-"""
+# --- Speaker initialization ---
+
+speaker.set_audio_output()
+
 # --- Helper functions ---
 
 def print_log_and_say(message):
@@ -48,14 +47,9 @@ def print_log_and_say(message):
         f.write("\n" + message)
 
     object_detection.video_status_text = message # Update the video status text in the AI detection module
-    """
-    try:
-        text_to_speech_engine.say(message)
-        text_to_speech_engine.runAndWait()
 
-    except Exception as e:
-        print(f"Speech error: {e}")
-    """
+    speaker.say_asynchronously
+    
 # --- Main program loop ---
 
 def follow():
