@@ -1,7 +1,7 @@
 
 # --- Imports ---
 
-import object_detection
+#import object_detection
 import time
 from motor_controller import forward, backwards, tank_turn_counterclockwise, tank_turn_clockwise, stop
 
@@ -24,7 +24,7 @@ def check_left():
     time.sleep(1)  # adjust rotation
     stop()
     time.sleep(0.2)
-    obstacle_left = object_detection.get_tracking_data()[3]
+    #obstacle_left = object_detection.get_tracking_data()[3]
     tank_turn_clockwise()  # turn back
     time.sleep(1)
     stop()
@@ -48,12 +48,12 @@ def check_right():
     time.sleep(1)
     stop()
     time.sleep(0.2)
-    obstacle_right = object_detection.get_tracking_data()[3]
+    #obstacle_right = object_detection.get_tracking_data()[3]
     tank_turn_counterclockwise()  # turn back
     time.sleep(1)
     stop()
     time.sleep(0.2)
-    return obstacle_right
+    #return obstacle_right
 
 
 def go_around_left():
@@ -139,12 +139,14 @@ def avoid_obstacle():
         time.sleep(1)
         avoid_obstacle()
 
-# --- Execution ---
+# --- Obstacle Test ---
 
 if __name__ == "__main__":
 
+    print("\nTesting left...")
     check_left()
     time.sleep(3)
 
+    print("\nTesting right...")
     check_right()
     time.sleep(3)
