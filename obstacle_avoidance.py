@@ -141,5 +141,9 @@ def avoid_obstacle():
 
 # --- Obstacle Test ---
 
-#if __name__ == "__main__":
+if __name__ == "__main__":
+    time.sleep(20)
+    go_around_left() 
+    time.sleep(5)
+    go_around_right()
     
