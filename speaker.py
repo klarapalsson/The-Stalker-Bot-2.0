@@ -4,6 +4,7 @@
 import pyttsx3
 import threading
 import subprocess
+import time
 
 # --- Definitions ---
 
@@ -79,3 +80,5 @@ if __name__ == "__main__":
     print("Running speaker test...")
 
     say_asynchronously("The speaker is working, twin.")
+
+    time.sleep(10)
