@@ -29,7 +29,7 @@ def check_left():
     time.sleep(1)
     stop()
     time.sleep(0.2)
-    return obstacle_left
+    #return obstacle_left
 
 def check_right():
 
