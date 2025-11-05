@@ -21,12 +21,12 @@ def check_left():
     """
 
     tank_turn_counterclockwise()
-    time.sleep(0.4)  # adjust rotation
+    time.sleep(1)  # adjust rotation
     stop()
     time.sleep(0.2)
     obstacle_left = object_detection.get_tracking_data()[3]
     tank_turn_clockwise()  # turn back
-    time.sleep(0.4)
+    time.sleep(1)
     stop()
     time.sleep(0.2)
     return obstacle_left
@@ -45,12 +45,12 @@ def check_right():
     """
 
     tank_turn_clockwise()
-    time.sleep(0.4)
+    time.sleep(1)
     stop()
     time.sleep(0.2)
     obstacle_right = object_detection.get_tracking_data()[3]
     tank_turn_counterclockwise()  # turn back
-    time.sleep(0.4)
+    time.sleep(1)
     stop()
     time.sleep(0.2)
     return obstacle_right
