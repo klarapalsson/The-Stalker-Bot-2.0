@@ -138,3 +138,13 @@ def avoid_obstacle():
         backwards()
         time.sleep(1)
         avoid_obstacle()
+
+# --- Execution ---
+
+if __name__ == "__main__":
+
+    check_left()
+    time.sleep(3)
+
+    check_right()
+    time.sleep(3)
