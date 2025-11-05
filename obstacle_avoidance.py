@@ -144,9 +144,21 @@ def avoid_obstacle():
 if __name__ == "__main__":
 
     print("\nTesting left...")
-    check_left()
-    time.sleep(3)
-
+    tank_turn_counterclockwise()
+    time.sleep(1)  # adjust rotation
+    stop()
+    time.sleep(0.2)
+    tank_turn_clockwise()  # turn back
+    time.sleep(1)
+    stop()
+    time.sleep(0.2)
+    
     print("\nTesting right...")
-    check_right()
-    time.sleep(3)
+    tank_turn_clockwise()
+    time.sleep(1)
+    stop()
+    time.sleep(0.2)
+    tank_turn_counterclockwise()  # turn back
+    time.sleep(1)
+    stop()
+    time.sleep(0.2)
