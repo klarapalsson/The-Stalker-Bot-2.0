@@ -147,20 +147,20 @@ if __name__ == "__main__":
 
     print("\nTesting left...")
     tank_turn_counterclockwise(100, 0.45)
-    time.sleep(1)  # adjust rotation
+    time.sleep(0.5)  # adjust rotation
     stop()
     time.sleep(0.2)
     tank_turn_clockwise(100, 0.45)  # turn back
-    time.sleep(1)
+    time.sleep(0.5)
     stop()
     time.sleep(0.2)
     
     print("\nTesting right...")
     tank_turn_clockwise(100, 0.45)
-    time.sleep(1)
+    time.sleep(0.5)
     stop()
     time.sleep(0.2)
     tank_turn_counterclockwise(100, 0.45)  # turn back
-    time.sleep(1)
+    time.sleep(0.5)
     stop()
     time.sleep(0.2)
