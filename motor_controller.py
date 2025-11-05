@@ -226,8 +226,8 @@ def tank_turn_counterclockwise(speed = 50, bias = 0.5):
     
     """
 
-    if speed * bias < 25:
-        biased_speed = 25
+    if speed * bias < 30:
+        biased_speed = 30
     else:
         biased_speed = speed * bias
 
@@ -249,8 +249,8 @@ def tank_turn_clockwise(speed = 50, bias = 0.5):
         None
     
     """
-    if speed * bias < 25:
-        biased_speed = 25
+    if speed * bias < 30:
+        biased_speed = 30
     else:
         biased_speed = speed * bias
 
