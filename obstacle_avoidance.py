@@ -1,7 +1,7 @@
 
 # --- Imports ---
 
-#import object_detection
+import object_detection
 import time
 from motor_controller import forward, backwards, tank_turn_counterclockwise, tank_turn_clockwise, stop
 
@@ -20,16 +20,16 @@ def check_left():
     
     """
 
-    tank_turn_counterclockwise()
-    time.sleep(1)  # adjust rotation
+    tank_turn_counterclockwise(100, 0.45)
+    time.sleep(0.5)  # adjust rotation
     stop()
-    time.sleep(0.2)
-    #obstacle_left = object_detection.get_tracking_data()[3]
-    tank_turn_clockwise()  # turn back
-    time.sleep(1)
+    obstacle_left = object_detection.get_tracking_data()[3]
+    time.sleep(0.5)
+    tank_turn_clockwise(100, 0.45)  # turn back
+    time.sleep(0.55)
     stop()
-    time.sleep(0.2)
-    #return obstacle_left
+    time.sleep(0.5)
+    return obstacle_left
 
 def check_right():
 
@@ -44,16 +44,16 @@ def check_right():
     
     """
 
-    tank_turn_clockwise()
-    time.sleep(1)
+    tank_turn_clockwise(100, 0.45)
+    time.sleep(0.55)
     stop()
-    time.sleep(0.2)
-    #obstacle_right = object_detection.get_tracking_data()[3]
-    tank_turn_counterclockwise()  # turn back
-    time.sleep(1)
+    obstacle_right = object_detection.get_tracking_data()[3]
+    time.sleep(0.5)
+    tank_turn_counterclockwise(100, 0.45)  # turn back
+    time.sleep(0.5)
     stop()
-    time.sleep(0.2)
-    #return obstacle_right
+    time.sleep(0.5)
+    return obstacle_right
 
 
 def go_around_left():
@@ -69,8 +69,8 @@ def go_around_left():
     
     """
 
-    tank_turn_counterclockwise()
-    time.sleep(0.6)
+    tank_turn_counterclockwise(100, 0.45)
+    time.sleep(0.5)
     stop()
     forward()
     time.sleep(1.2)
@@ -89,8 +89,8 @@ def go_around_right():
 
     """
 
-    tank_turn_clockwise()
-    time.sleep(0.6)
+    tank_turn_clockwise(100, 0.45)
+    time.sleep(0.55)
     stop()
     forward()
     time.sleep(1.2)
@@ -141,26 +141,5 @@ def avoid_obstacle():
 
 # --- Obstacle Test ---
 
-if __name__ == "__main__":
-
-    time.sleep(15)
-
-    print("\nTesting left...")
-    tank_turn_counterclockwise(100, 0.45)
-    time.sleep(0.5)  # adjust rotation
-    stop()
-    time.sleep(0.5)
-    tank_turn_clockwise(100, 0.45)  # turn back
-    time.sleep(0.55)
-    stop()
-    time.sleep(0.5)
+#if __name__ == "__main__":
     
-    print("\nTesting right...")
-    tank_turn_clockwise(100, 0.45)
-    time.sleep(0.55)
-    stop()
-    time.sleep(0.5)
-    tank_turn_counterclockwise(100, 0.45)  # turn back
-    time.sleep(0.5)
-    stop()
-    time.sleep(0.5)
