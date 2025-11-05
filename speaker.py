@@ -78,6 +78,4 @@ if __name__ == "__main__":
 
     print("Running speaker test...")
 
-    set_audio_output()
-
     say_asynchronously("The speaker is working, twin.")
