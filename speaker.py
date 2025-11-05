@@ -3,39 +3,12 @@
 
 import pyttsx3
 import threading
-import subprocess
 import time
 
 # --- Definitions ---
 
-audio_output_device = "alsa_output.usb-AudioQuest_DragonFly_Red-00.analog-stereo"
-speech_rate = 170
+speech_rate = 150
 speech_volume = 1.0
-
-# --- Audio routing setup ---
-
-def set_audio_output():
-
-    """
-    Sets the system default audio sink to the configured DragonFly Red DAC. If it fails, prints a warning and continues with system default.
-
-    Arguments:
-        None
-    
-    Returns:
-        None
-
-    """
-
-    try:
-        subprocess.run(["pactl", "set-default-sink", audio_output_device], check = True)
-        print(f"Audio output set to: {audio_output_device}")
-
-    except subprocess.CalledProcessError:
-        print(f"Warning: Could not set audio output to {audio_output_device}. Using system default.")
-
-    except FileNotFoundError:
-        print("pactl command not found. Install pulseaudio or pipewire-pulse.")
 
 # ---- Speech function ---
 
@@ -73,7 +46,7 @@ def say_asynchronously(message):
 
     threading.Thread(target = _speak, daemon = True).start()
 
-# --- Speaker test ---
+# --- Test ---
 
 if __name__ == "__main__":
 
@@ -81,4 +54,4 @@ if __name__ == "__main__":
 
     say_asynchronously("The speaker is working, twin.")
 
-    time.sleep(10)
+    time.sleep(5)

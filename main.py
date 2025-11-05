@@ -22,10 +22,6 @@ log_file_path = "robot_log.txt"
 with open(log_file_path, "w") as f:
     f.write("Robot session started")
 
-# --- Speaker initialization ---
-
-speaker.set_audio_output()
-
 # --- Helper functions ---
 
 def print_log_and_say(message):
