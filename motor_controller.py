@@ -154,8 +154,8 @@ def forward(direction = "centered", speed = 100, bias = 0.5):
     
     """
     
-    if speed * bias < 25:
-        biased_speed = 25
+    if speed * bias < 30:
+        biased_speed = 30
 
     else:
         biased_speed = speed * bias
@@ -192,8 +192,8 @@ def backwards(direction = "centered", speed = 100, bias = 0.5):
 
     print(f"\n bias is: {bias}")
 
-    if speed * bias < 25:
-        biased_speed = 25
+    if speed * bias < 30:
+        biased_speed = 30
 
     else:
         biased_speed = speed * bias
