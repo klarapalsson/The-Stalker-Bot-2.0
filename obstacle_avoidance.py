@@ -143,6 +143,8 @@ def avoid_obstacle():
 
 if __name__ == "__main__":
 
+    time.sleep(30)
+
     print("\nTesting left...")
     tank_turn_counterclockwise()
     time.sleep(1)  # adjust rotation
