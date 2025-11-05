@@ -151,13 +151,13 @@ if __name__ == "__main__":
     stop()
     time.sleep(0.2)
     tank_turn_clockwise(100, 0.45)  # turn back
-    time.sleep(0.5)
+    time.sleep(0.55)
     stop()
     time.sleep(0.2)
     
     print("\nTesting right...")
     tank_turn_clockwise(100, 0.45)
-    time.sleep(0.5)
+    time.sleep(0.55)
     stop()
     time.sleep(0.2)
     tank_turn_counterclockwise(100, 0.45)  # turn back
