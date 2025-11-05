@@ -4,7 +4,6 @@
 import time
 import object_detection
 import obstacle_avoidance
-from ultrasonic_sensor import get_distance
 from motor_controller import forward, backwards, tank_turn_counterclockwise, tank_turn_clockwise, stop, disable_motors
 #import pyttsx3
 
@@ -12,8 +11,6 @@ from motor_controller import forward, backwards, tank_turn_counterclockwise, tan
 
 target_minimum_area = 0.35
 target_maximum_area = 0.5
-
-safe_distance_in_cm = 50
 
 follow_loop_update_time = 0.1
 
@@ -78,9 +75,7 @@ def follow():
 
         direction, bias, speed, obstacle, person_area = object_detection.get_tracking_data() # Gets necessary data from the AI camera
 
-        #distance_in_cm = get_distance() # Gets distance to closest obstacle/wall from ultrasonic sensor    
-
-        if obstacle: #or distance_in_cm <= safe_distance_in_cm: # If either the AI camera or the ultrasonic sensor detects an obstacle:
+        if obstacle:  #If the AI camera detects an obstacle:
             print_log_and_say("Trying to avoid an obstacle...")
             #obstacle_avoidance.avoid_obstacle()
             stop()
