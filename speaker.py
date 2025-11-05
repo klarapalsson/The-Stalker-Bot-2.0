@@ -80,6 +80,4 @@ if __name__ == "__main__":
 
     set_audio_output()
 
-    subprocess.run(["speaker-test", "-c2", "-t", "sine", "-l", "1"], timeout = 3)
-
     say_asynchronously("The speaker is working, twin.")
