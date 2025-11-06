@@ -99,10 +99,8 @@ if __name__ == "__main__":
     try:
         follow()
     except KeyboardInterrupt:
-        print("\nKeyboard interrupt detected — stopping safely...")
+        speaker.stop_tts(graceful=True)
         stop()
-        speaker.stop_engine()          # Immediately stops any ongoing speech
-        speaker.stop_tts(wait=True)    # Signals the worker thread to exit cleanly
     finally:
         disable_motors()
         print("\nbye bye")
