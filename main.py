@@ -99,11 +99,8 @@ if __name__ == "__main__":
     try:
         follow()
     except KeyboardInterrupt:
-        print("\nKeyboard interrupt detected — stopping safely...")
+        speaker.stop_tts(graceful=True)
         stop()
     finally:
-        print("Disabling motors and shutting down TTS...")
         disable_motors()
-        speaker.stop_engine()
-        speaker.stop_tts()
-        print("Shutdown complete. Goodbye!")
+        print("\nbye bye")
