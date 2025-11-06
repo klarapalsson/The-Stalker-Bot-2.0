@@ -34,7 +34,7 @@ def print_and_say(message):
 
     object_detection.video_status_text = message # Update the video status text in the AI detection module
 
-    speaker.say_latest(message)
+    speaker.say_async(message)
     
 # --- Main program loop ---
 
