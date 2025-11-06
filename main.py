@@ -77,16 +77,18 @@ def follow():
             print_and_say("Person is too close, moving backwards...")
             backwards(direction, speed, bias)
         else:
-            print_and_say("Distance is OK, stopping...")
         
             if direction == "right":
                 tank_turn_clockwise(50, bias)
+                print_and_say("Turning right...")
 
             elif direction == "left":
                 tank_turn_counterclockwise(50, bias)
+                print_and_say("Turning left...")
 
             else:
                 stop()
+                print_and_say("Distance is OK, stopping...")
 
         time.sleep(follow_loop_update_time)
 
