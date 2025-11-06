@@ -97,13 +97,13 @@ def follow():
 if __name__ == "__main__":
 
     try:
-    follow()
-except KeyboardInterrupt:
-    print("\nKeyboard interrupt detected — stopping safely...")
-    stop()
-finally:
-    print("Disabling motors and shutting down TTS...")
-    disable_motors()
-    speaker.stop_engine()
-    speaker.stop_tts()
-    print("Shutdown complete. Goodbye!")
+        follow()
+    except KeyboardInterrupt:
+        print("\nKeyboard interrupt detected — stopping safely...")
+        stop()
+    finally:
+        print("Disabling motors and shutting down TTS...")
+        disable_motors()
+        speaker.stop_engine()
+        speaker.stop_tts()
+        print("Shutdown complete. Goodbye!")
