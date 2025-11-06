@@ -1,12 +1,9 @@
-# speaker.py
 import sys
 import subprocess
 import signal
-import os
+import threading
 
-current_proc = None
-
-# Detect platform TTS command
+# --- Platform-specific setup ---
 if sys.platform == "darwin":
     TTS_CMD = ["say"]
 elif sys.platform.startswith("linux"):
@@ -15,51 +12,76 @@ elif sys.platform.startswith("linux"):
     elif subprocess.call(["which", "spd-say"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0:
         TTS_CMD = ["spd-say"]
     else:
-        raise RuntimeError("No TTS backend found")
+        raise RuntimeError("No TTS backend found. Install espeak or spd-say.")
 elif sys.platform.startswith("win"):
-    TTS_CMD = ["powershell", "-NoProfile", "-Command",
-               "Add-Type -AssemblyName System.speech;"
-               "$s=New-Object System.Speech.Synthesis.SpeechSynthesizer;"
-               "$s.Speak([Console]::In.ReadToEnd())"]
+    TTS_CMD = [
+        "powershell", "-NoProfile", "-Command",
+        "Add-Type -AssemblyName System.speech;"
+        "$s=New-Object System.Speech.Synthesis.SpeechSynthesizer;"
+        "$s.Speak([Console]::In.ReadToEnd())"
+    ]
 else:
     raise RuntimeError("Unsupported platform")
 
-def say_async(message):
-    """Speak message asynchronously, always cancelling previous speech"""
+# --- Globals ---
+current_proc = None
+stop_event = threading.Event()
+lock = threading.Lock()
+
+# --- Core functions ---
+def say_latest(message: str):
+    """Speak the latest message, cancelling any in progress."""
     global current_proc
 
-    # Kill previous speech if any
-    if current_proc is not None:
-        try:
-            current_proc.terminate()
-        except Exception:
-            pass
-        current_proc = None
+    with lock:
+        # Stop any ongoing speech
+        if current_proc is not None:
+            try:
+                current_proc.terminate()
+            except Exception:
+                pass
+            current_proc = None
 
-    # Start new speech
-    if sys.platform.startswith("win"):
-        current_proc = subprocess.Popen(TTS_CMD, stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        try:
-            current_proc.stdin.write(message.encode("utf-8"))
-            current_proc.stdin.close()
-        except Exception:
-            pass
-    else:
-        current_proc = subprocess.Popen(TTS_CMD + [message], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        # Don’t start if shutting down
+        if stop_event.is_set():
+            return
 
-def stop():
-    """Stop any ongoing speech immediately"""
+        if sys.platform.startswith("win"):
+            current_proc = subprocess.Popen(
+                TTS_CMD,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                shell=False
+            )
+            try:
+                current_proc.stdin.write(message.encode("utf-8"))
+                current_proc.stdin.close()
+            except Exception:
+                pass
+        else:
+            current_proc = subprocess.Popen(
+                TTS_CMD + [message],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+
+def stop_tts():
+    """Stop any ongoing speech immediately."""
     global current_proc
-    if current_proc is not None:
-        try:
-            current_proc.terminate()
-        except Exception:
-            pass
-        current_proc = None
+    with lock:
+        if current_proc is not None:
+            try:
+                current_proc.terminate()
+            except Exception:
+                pass
+            current_proc = None
 
-# Ctrl+C handler to ensure TTS stops
 def _signal_handler(sig, frame):
-    stop()
-    os._exit(0)
+    """Handle Ctrl+C gracefully."""
+    print("\nCtrl+C pressed: stopping TTS and exiting cleanly.")
+    stop_event.set()
+    stop_tts()
 
+# Install signal handler only if running as main (not when imported)
 signal.signal(signal.SIGINT, _signal_handler)
