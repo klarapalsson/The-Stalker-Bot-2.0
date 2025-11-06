@@ -1,46 +1,68 @@
-# tts_last_only_interruptible.py
+# tts_ctrlc_fixed.py
 import pyttsx3
 import threading
 import queue
 import time
+import signal
 import sys
+import os
 
+# --- Settings ---
 speech_rate = 150
 speech_volume = 1.0
 
-_speech_queue = queue.Queue(maxsize=1)
+# --- Internal state ---
+_speech_queue = queue.Queue(maxsize=1)  # only keep last pending message
 _worker_thread = None
 _worker_lock = threading.Lock()
 _worker_shutdown = threading.Event()
 
+# Expose engine so main thread / signal handler can stop it
+_engine_lock = threading.Lock()
+_engine = None
+
 def _tts_worker():
-    engine = pyttsx3.init()
-    engine.setProperty("rate", speech_rate)
-    engine.setProperty("volume", speech_volume)
+    global _engine
+    engine = None
+    try:
+        engine = pyttsx3.init()
+        engine.setProperty("rate", speech_rate)
+        engine.setProperty("volume", speech_volume)
 
-    while not _worker_shutdown.is_set():
-        try:
-            message = _speech_queue.get(timeout=0.3)
-        except queue.Empty:
-            continue
+        # publish engine to main thread (protected)
+        with _engine_lock:
+            _engine = engine
 
-        if message is None:
-            break
+        while not _worker_shutdown.is_set():
+            try:
+                message = _speech_queue.get(timeout=0.3)
+            except queue.Empty:
+                continue
+
+            if message is None:
+                break
+
+            try:
+                engine.say(message)
+                engine.runAndWait()
+            except Exception:
+                # swallow errors but keep running
+                pass
+            finally:
+                try:
+                    _speech_queue.task_done()
+                except Exception:
+                    pass
+
+    finally:
+        # cleanup: make sure engine is not referenced after stopping
         try:
-            engine.say(message)
-            engine.runAndWait()
+            if engine is not None:
+                engine.stop()
         except Exception:
             pass
-        finally:
-            try:
-                _speech_queue.task_done()
-            except Exception:
-                pass
-
-    try:
-        engine.stop()
-    except Exception:
-        pass
+        with _engine_lock:
+            _engine = None
 
 def _ensure_worker():
     global _worker_thread
@@ -51,10 +73,12 @@ def _ensure_worker():
             _worker_thread.start()
 
 def say_async(message):
+    """Queue message but keep only the latest pending one."""
     _ensure_worker()
     try:
         _speech_queue.put_nowait(message)
     except queue.Full:
+        # drop previous pending and insert the new one
         try:
             _speech_queue.get_nowait()
             _speech_queue.task_done()
@@ -62,32 +86,15 @@ def say_async(message):
             pass
         _speech_queue.put_nowait(message)
 
-def stop_tts():
-    """Signal worker to exit and stop any ongoing speech."""
-    _worker_shutdown.set()
-    try:
-        _speech_queue.put_nowait(None)
-    except queue.Full:
+def stop_engine():
+    """Call engine.stop() from main thread if worker's engine exists."""
+    with _engine_lock:
+        eng = _engine
+    if eng is not None:
         try:
-            _speech_queue.get_nowait()
-            _speech_queue.task_done()
-        except queue.Empty:
+            # engine.stop() is thread-safe in practice for pyttsx3 and will break runAndWait()
+            eng.stop()
+        except Exception:
             pass
-        _speech_queue.put_nowait(None)
 
-# --- Test ---
-if __name__ == "__main__":
-    print("Running Ctrl+C-friendly speaker test...")
-    try:
-        i = 0
-        while True:
-            say_async(f"This is message number {i}.")
-            time.sleep(2)
-            i += 1
-    except KeyboardInterrupt:
-        print("\nKeyboard interrupt detected. Stopping TTS...")
-        stop_tts()
-        # Give a brief moment to allow background cleanup
-        time.sleep(0.5)
-        print("TTS stopped. Exiting.")
-        sys.exit(0)
+def stop_tts(wait=True, t_
