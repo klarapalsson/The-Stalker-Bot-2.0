@@ -1,7 +1,7 @@
 
 # --- Imports ---
 
-import object_detection
+#import object_detection
 import time
 from motor_controller import forward, backwards, tank_turn_counterclockwise, tank_turn_clockwise, stop
 
