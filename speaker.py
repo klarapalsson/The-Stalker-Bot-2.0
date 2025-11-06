@@ -97,4 +97,72 @@ def stop_engine():
         except Exception:
             pass
 
-def stop_tts(wait=True, t_
+def stop_tts(wait=True, timeout=1.0):
+    """Signal the worker to exit and try to join it."""
+    _worker_shutdown.set()
+    # put sentinel to wake worker
+    try:
+        _speech_queue.put_nowait(None)
+    except queue.Full:
+        try:
+            _speech_queue.get_nowait()
+            _speech_queue.task_done()
+        except queue.Empty:
+            pass
+        try:
+            _speech_queue.put_nowait(None)
+        except Exception:
+            pass
+
+    global _worker_thread
+    if wait and _worker_thread is not None:
+        _worker_thread.join(timeout=timeout)
+        # clear thread ref if not alive
+        if not _worker_thread.is_alive():
+            _worker_thread = None
+
+def _sigint_handler(signum, frame):
+    """Handle Ctrl+C (SIGINT) — attempt graceful shutdown, then force exit if needed."""
+    print("\nSIGINT received: stopping TTS...")
+    try:
+        # First try to interrupt any ongoing speech immediately
+        stop_engine()
+    except Exception:
+        pass
+
+    try:
+        # Then tell worker to stop and wait briefly
+        stop_tts(wait=True, timeout=1.0)
+    except Exception:
+        pass
+
+    # If the worker is still alive after join attempt, force-exit
+    with _worker_lock:
+        still_alive = _worker_thread is not None and _worker_thread.is_alive()
+    if still_alive:
+        print("Worker did not exit quickly; forcing process exit.")
+        # os._exit bypasses cleanup but ensures process ends
+        os._exit(1)
+
+    print("TTS stopped. Exiting.")
+    sys.exit(0)
+
+# Install SIGINT handler so Ctrl+C goes through our shutdown logic
+signal.signal(signal.SIGINT, _sigint_handler)
+
+# --- Example usage ---
+if __name__ == "__main__":
+    print("Running Ctrl+C-friendly TTS. Press Ctrl+C to stop.")
+    try:
+        i = 0
+        while True:
+            say_async(f"Message number {i}")
+            i += 1
+            # short sleep so Ctrl+C is responsive
+            time.sleep(0.75)
+    except KeyboardInterrupt:
+        # Fallback in case signal handler didn't run for some reason
+        print("\nKeyboardInterrupt caught in main loop; performing shutdown.")
+        stop_engine()
+        stop_tts()
+        sys.exit(0)
