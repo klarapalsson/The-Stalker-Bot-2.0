@@ -341,7 +341,16 @@ def get_tracking_data():
 
             x_center_obstacle = x + width / 2
             x_center_obstacle_normalized = x_center_obstacle / camera_frame_width 
-            obstacle_bottom_normalized = (y + height) / camera_frame_height
+            obstacle_bottom = y + height
+            obstacle_bottom_normalized = obstacle_bottom / camera_frame_height
+
+            person_in_front = False
+            for person in person_detections:
+                _, y_p, _, h_p = person.box
+                person_bottom = y_p + h_p
+                if person_bottom > obstacle_bottom:
+                    person_in_front = True
+                    break
 
             if ((width / camera_frame_width) > obstacle_width_threshold and abs(x_center_obstacle_normalized - 0.5) < (obstacle_center_x_threshold/2) and obstacle_bottom_normalized > obstacle_bottom_threshold):
                 # If the obstacle box width is larger than the threshold, the obstacle is in the driving path and close enough
@@ -350,7 +359,7 @@ def get_tracking_data():
                 obstacle_detected = True
                 break
 
-    return direction, bias, speed, obstacle_detected, person_area_normalized
+    return direction, bias, speed, obstacle_detected, person_area_normalized, person_in_front
 
 # --- Camera setup ---
 
