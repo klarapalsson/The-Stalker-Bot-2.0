@@ -312,6 +312,7 @@ def get_tracking_data():
     bias = None
     speed_bias = 0
     speed = 0
+    person_in_front = False
     
 
     if person_detections: # If there are any person detections:
@@ -344,7 +345,6 @@ def get_tracking_data():
             obstacle_bottom = y + height
             obstacle_bottom_normalized = obstacle_bottom / camera_frame_height
 
-            person_in_front = False
             for person in person_detections:
                 _, y_p, _, h_p = person.box
                 person_bottom = y_p + h_p
