@@ -53,9 +53,9 @@ def follow():
 
     while True:
 
-        direction, bias, speed, obstacle, person_area = object_detection.get_tracking_data() # Gets necessary data from the AI camera
+        direction, bias, speed, obstacle, person_area, person_in_front = object_detection.get_tracking_data() # Gets necessary data from the AI camera
 
-        if obstacle:  #If the AI camera detects an obstacle:
+        if obstacle and not person_in_front:  #If the AI camera detects an obstacle:
             print_and_say("Trying to avoid an obstacle...")
             obstacle_avoidance.avoid_obstacle()
             continue
