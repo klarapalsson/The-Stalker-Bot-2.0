@@ -53,6 +53,12 @@ def follow():
 
     while True:
 
+        if hasattr(cv2, "waitKey"):
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q'):
+                print("Quit key pressed — shutting down.")
+                break
+
         direction, bias, speed, obstacle, person_area, person_in_front = object_detection.get_tracking_data() # Gets necessary data from the AI camera
 
         if obstacle and person_area is not None and not person_in_front:  #If the AI camera detects an obstacle and ses obstacle in front of person:
@@ -90,12 +96,6 @@ def follow():
                 print_and_say("Distance is OK, stopping...")
 
         time.sleep(follow_loop_update_time)
-
-        if hasattr(cv2, "waitKey"):
-            key = cv2.waitKey(1) & 0xFF
-            if key == ord('q'):
-                print("Quit key pressed — shutting down.")
-                break
 
 # --- Execution ---
 if __name__ == "__main__":
