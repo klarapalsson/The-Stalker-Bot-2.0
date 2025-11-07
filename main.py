@@ -88,7 +88,8 @@ def follow():
 
         if obstacle and person_area is not None and not person_in_front:  #If the AI camera detects an obstacle and ses obstacle in front of person:
             print_and_say("Trying to avoid an obstacle...")
-            obstacle_avoidance.avoid_obstacle()
+            #obstacle_avoidance.avoid_obstacle()
+            stop()
             continue
             
         if person_area is None:
