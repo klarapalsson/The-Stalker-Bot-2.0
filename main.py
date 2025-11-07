@@ -8,12 +8,42 @@ import object_detection
 import obstacle_avoidance
 from motor_controller import forward, backwards, tank_turn_counterclockwise, tank_turn_clockwise, stop, disable_motors
 
+import sys
+import termios
+import tty
+import threading
+
 # --- General definitions ---
 
 target_minimum_area = 0.35
 target_maximum_area = 0.5
 
 follow_loop_update_time = 0.1
+
+# --- Key listener setup ---
+
+stop_flag = False  # global flag used to stop the loop
+
+def key_listener():
+    """Runs in a separate thread — listens for 'q' key to stop the program."""
+    global stop_flag
+    fd = sys.stdin.fileno()
+    old = termios.tcgetattr(fd)
+    tty.setcbreak(fd)  # non-blocking input mode
+    try:
+        while True:
+            ch = sys.stdin.read(1)
+            if ch.lower() == 'q':
+                print("\n'q' pressed — stopping program...")
+                stop_flag = True
+                break
+    except Exception:
+        pass
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old)
+
+# Start the listener thread
+threading.Thread(target=key_listener, daemon=True).start()
 
 # --- Helper functions ---
 
@@ -51,13 +81,8 @@ def follow():
     
     """
 
-    while True:
-
-        if hasattr(cv2, "waitKey"):
-            key = cv2.waitKey(1) & 0xFF
-            if key == ord('q'):
-                print("Quit key pressed — shutting down.")
-                break
+    global stop_flag
+    while not stop_flag:
 
         direction, bias, speed, obstacle, person_area, person_in_front = object_detection.get_tracking_data() # Gets necessary data from the AI camera
 
@@ -101,15 +126,10 @@ def follow():
 if __name__ == "__main__":
     try:
         follow()
-
     except KeyboardInterrupt:
-        print("\nKeyboard interrupt detected — shutting down.")
-        speaker.stop_tts(graceful=True)
+        print("\nKeyboardInterrupt detected.")
         stop()
-
+        speaker.stop_tts(graceful=True)
     finally:
-        cv2.destroyAllWindows()
-        stop()
-        speaker.stop_tts(graceful=True)
         disable_motors()
-        print("\nBye bye")
+        print("\nbye bye")
