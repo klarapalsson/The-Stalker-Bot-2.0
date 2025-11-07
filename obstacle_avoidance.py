@@ -72,9 +72,38 @@ def go_around_left():
     tank_turn_counterclockwise(100, 0.45)
     time.sleep(0.5)
     stop()
+    time.sleep(0.5)
     forward()
-    time.sleep(1.2)
+    time.sleep(0.5)
+    obstacle_right = check_right()
+
+    while obstacle_right:
+        forward()
+        time.sleep(0.5)
+        stop()
+        time.sleep(0.5)
+        obstacle_right = check_right()
+
+    tank_turn_clockwise(100, 0.45)
+    time.sleep(0.55)
     stop()
+
+    forward()
+    time.sleep(0.5)
+    obstacle_right = check_right()
+
+    while obstacle_right:
+        forward()
+        time.sleep(0.5)
+        stop()
+        time.sleep(0.5)
+        obstacle_right = check_right()
+
+    tank_turn_clockwise(100, 0.45)
+    time.sleep(0.55)
+    stop()
+
+
 
 def go_around_right():
 
@@ -92,8 +121,35 @@ def go_around_right():
     tank_turn_clockwise(100, 0.45)
     time.sleep(0.55)
     stop()
+    time.sleep(0.5)
     forward()
-    time.sleep(1.2)
+    time.sleep(0.5)
+    obstacle_left = check_left()
+    
+    while obstacle_left:
+        forward()
+        time.sleep(0.5)
+        stop()
+        time.sleep(0.5)
+        obstacle_left = check_left()
+
+    tank_turn_counterclockwise(100, 0.45)
+    time.sleep(0.5)
+    stop()
+
+    forward()
+    time.sleep(0.5)
+    obstacle_left = check_left()
+
+    while obstacle_left:
+        forward()
+        time.sleep(0.5)
+        stop()
+        time.sleep(0.5)
+        obstacle_left = check_left()
+    
+    tank_turn_counterclockwise(100, 0.45)
+    time.sleep(0.5)
     stop()
 
 # --- Main function ---
