@@ -2,7 +2,7 @@
 # --- Imports ---
 
 import time
-
+import cv2
 import speaker
 import object_detection
 import obstacle_avoidance
@@ -91,15 +91,25 @@ def follow():
 
         time.sleep(follow_loop_update_time)
 
+        if hasattr(cv2, "waitKey"):
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q'):
+                print("Quit key pressed — shutting down.")
+                break
+
 # --- Execution ---
-
 if __name__ == "__main__":
-
     try:
         follow()
+
     except KeyboardInterrupt:
+        print("\nKeyboard interrupt detected — shutting down.")
         speaker.stop_tts(graceful=True)
         stop()
+
     finally:
+        cv2.destroyAllWindows()
+        stop()
+        speaker.stop_tts(graceful=True)
         disable_motors()
-        print("\nbye bye")
+        print("\nBye bye")
