@@ -5,7 +5,6 @@ import time
 import cv2
 import speaker
 import object_detection
-import obstacle_avoidance
 from motor_controller import forward, backwards, tank_turn_counterclockwise, tank_turn_clockwise, stop, disable_motors
 
 import sys
@@ -88,7 +87,6 @@ def follow():
 
         if obstacle and person_area is not None and not person_in_front:  #If the AI camera detects an obstacle and ses obstacle in front of person:
             print_and_say("Trying to avoid an obstacle...")
-            #obstacle_avoidance.avoid_obstacle()
             stop()
             continue
             
